@@ -30,118 +30,119 @@ export interface Candidate {
 export const MOCK_CANDIDATES: Candidate[] = [
   {
     id: "1",
-    name: "Rajesh Kumar",
-    party: "Progress Party",
-    constituency: "South City",
-    age: 45,
-    education: "M.Sc. Economics",
+    name: "Aakash Mehta",
+    party: "Mumbai Development Front",
+    constituency: "Mumbai South",
+    age: 48,
+    education: "MBA, University of Mumbai",
     image: "https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&q=80&w=256",
     criminalCases: 0,
-    assets: "₹2.5 Cr",
-    attendance: 85,
-    bio: "Dedicated to urban development and sustainable infrastructure. Served as a municipal councilor for 10 years before running for assembly.",
+    assets: "₹12.5 Cr",
+    attendance: 88,
+    bio: "Focusing on Mumbai's coastal road projects and local train infrastructure. A former corporate leader committed to urban efficiency.",
     promises: [
       {
         id: "p1",
-        title: "Metro Expansion",
-        description: "Extend the metro line to the southern suburbs within 3 years.",
+        title: "Coastal Road Phase 2",
+        description: "Complete the connection from Worli to Nariman Point.",
         status: "in-progress",
         category: "Infrastructure",
-        completionPercentage: 60
+        completionPercentage: 75
       },
       {
         id: "p2",
-        title: "New Public Library",
-        description: "Build a state-of-the-art digital library for students.",
+        title: "Public School Tech-Lab",
+        description: "Equip 50 BMC schools with modern coding labs.",
         status: "completed",
         category: "Education",
         completionPercentage: 100
       },
       {
         id: "p3",
-        title: "Clean Air Initiative",
-        description: "Reduce particulate matter by 20% through stricter industrial norms.",
+        title: "Dharavi Redevelopment",
+        description: "Initiate housing allotment for Phase 1 residents.",
         status: "not-started",
-        category: "Environment",
+        category: "Housing",
         completionPercentage: 0
       }
     ],
     funds: {
-      allocated: 50000000,
-      utilized: 35000000,
+      allocated: 150000000,
+      utilized: 110000000,
       projects: [
-        { name: "Road Resurfacing - Sector 4", cost: 12000000, status: "Completed" },
-        { name: "Park Renovation", cost: 5000000, status: "In Progress" },
-        { name: "Street Light Installation", cost: 8000000, status: "Completed" }
+        { name: "Marine Drive Beautification", cost: 25000000, status: "Completed" },
+        { name: "CCTV Network Expansion", cost: 45000000, status: "In Progress" },
+        { name: "Garden Restoration", cost: 15000000, status: "Completed" }
       ]
     }
   },
   {
     id: "2",
-    name: "Sarah Fernandes",
-    party: "Civic Alliance",
-    constituency: "West Hills",
-    age: 38,
-    education: "B.A. Political Science",
+    name: "Priya Sawant",
+    party: "Shiv Sena (UBT)",
+    constituency: "Mumbai North West",
+    age: 42,
+    education: "LL.M., Government Law College",
     image: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&q=80&w=256",
     criminalCases: 1,
-    assets: "₹1.2 Cr",
-    attendance: 92,
-    bio: "Focusing on education reform and healthcare accessibility. Former activist with a strong track record in community service.",
+    assets: "₹4.2 Cr",
+    attendance: 95,
+    bio: "Advocating for the protection of Aarey Forest and improving healthcare services in the western suburbs.",
     promises: [
       {
         id: "p4",
-        title: "Community Health Center",
-        description: "Establish a 24/7 clinic in West Hills.",
+        title: "Aarey Protection Act",
+        description: "Formalize the forest boundaries to prevent further encroachment.",
         status: "completed",
-        category: "Healthcare",
+        category: "Environment",
         completionPercentage: 100
       },
       {
         id: "p5",
-        title: "School Digitalization",
-        description: "Provide tablets to all government school students.",
-        status: "broken",
-        category: "Education",
-        completionPercentage: 10
+        title: "Suburban Multi-specialty Hospital",
+        description: "Build a new 500-bed hospital in Andheri.",
+        status: "in-progress",
+        category: "Healthcare",
+        completionPercentage: 30
       }
     ],
     funds: {
-      allocated: 40000000,
-      utilized: 38000000,
+      allocated: 120000000,
+      utilized: 45000000,
       projects: [
-        { name: "Health Center Construction", cost: 25000000, status: "Completed" },
-        { name: "School Supplies", cost: 5000000, status: "Completed" }
+        { name: "Hospital Foundation", cost: 35000000, status: "In Progress" },
+        { name: "Mangrove Cleanup", cost: 5000000, status: "Completed" }
       ]
     }
   },
   {
     id: "3",
-    name: "Vikram Singh",
-    party: "National Union",
-    constituency: "North Industrial Zone",
-    age: 52,
-    education: "B.Tech Civil Engineering",
+    name: "Suresh Prabhu",
+    party: "BJP",
+    constituency: "Mumbai North East",
+    age: 55,
+    education: "B.E. Civil Engineering",
     image: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&q=80&w=256",
-    criminalCases: 3,
-    assets: "₹15 Cr",
-    attendance: 45,
-    bio: "Industrialist turned politician. Promises to bring jobs and improve factory conditions.",
+    criminalCases: 2,
+    assets: "₹28 Cr",
+    attendance: 72,
+    bio: "Veteran politician focused on industrial growth and transforming Mumbai into a global financial hub.",
     promises: [
       {
         id: "p6",
-        title: "Job Fair 2025",
-        description: "Organize a massive job fair for local youth.",
+        title: "Vikhroli Flyover",
+        description: "Construct the long-pending Vikhroli east-west bridge.",
         status: "in-progress",
-        category: "Employment",
-        completionPercentage: 40
+        category: "Infrastructure",
+        completionPercentage: 55
       }
     ],
     funds: {
-      allocated: 70000000,
-      utilized: 20000000,
+      allocated: 200000000,
+      utilized: 95000000,
       projects: [
-        { name: "Industrial Waste Plant", cost: 15000000, status: "Stalled" }
+        { name: "Bridge Piling Works", cost: 60000000, status: "In Progress" },
+        { name: "Market Modernization", cost: 20000000, status: "Completed" }
       ]
     }
   }

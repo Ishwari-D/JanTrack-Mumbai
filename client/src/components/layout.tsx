@@ -17,7 +17,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
               <div className="bg-primary text-primary-foreground p-1.5 rounded-md group-hover:bg-primary/90 transition-colors">
                 <ShieldCheck size={24} strokeWidth={2.5} />
               </div>
-              <span className="text-xl font-serif font-bold tracking-tight text-primary">CivicEye</span>
+              <span className="text-xl font-serif font-bold tracking-tight text-primary">MumbaiTracker</span>
             </a>
           </Link>
 
@@ -70,7 +70,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
           <div className="space-y-4">
             <div className="flex items-center gap-2">
               <ShieldCheck className="text-primary" size={24} />
-              <span className="text-xl font-serif font-bold text-primary">CivicEye</span>
+              <span className="text-xl font-serif font-bold text-primary">MumbaiTracker</span>
             </div>
             <p className="text-sm text-muted-foreground leading-relaxed">
               Empowering citizens with verified data for informed democratic participation. Transparency builds trust.

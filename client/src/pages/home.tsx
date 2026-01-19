@@ -24,7 +24,7 @@ export default function Home() {
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-secondary opacity-75"></span>
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-secondary"></span>
               </span>
-              2026 Election Tracker Live
+              Mumbai Elections 2026 Tracker Live
             </div>
             
             <h1 className="text-4xl md:text-6xl font-serif font-bold text-white leading-tight">
