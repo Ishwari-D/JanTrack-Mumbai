@@ -3,7 +3,7 @@ import { Candidate } from "@/lib/mock-data";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { AlertCircle, CheckCircle2, Gavel, Briefcase, GraduationCap } from "lucide-react";
+import { ShieldCheck, AlertCircle, Briefcase, GraduationCap } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 
 export function CandidateCard({ candidate }: { candidate: Candidate }) {
@@ -85,5 +85,3 @@ export function CandidateCard({ candidate }: { candidate: Candidate }) {
     </Card>
   );
 }
-
-import { ShieldCheck } from "lucide-react";
