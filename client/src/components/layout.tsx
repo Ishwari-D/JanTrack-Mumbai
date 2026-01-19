@@ -25,6 +25,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
           <nav className="hidden md:flex items-center gap-8">
             <Link href="/"><a className={`text-sm font-medium hover:text-primary transition-colors ${location === '/' ? 'text-primary' : 'text-muted-foreground'}`}>Home</a></Link>
             <Link href="/dashboard"><a className={`text-sm font-medium hover:text-primary transition-colors ${location === '/dashboard' ? 'text-primary' : 'text-muted-foreground'}`}>Constituency Dashboard</a></Link>
+            <Link href="/report-issue"><a className={`text-sm font-medium hover:text-primary transition-colors ${location === '/report-issue' ? 'text-primary' : 'text-muted-foreground'}`}>Report Issue</a></Link>
             <Link href="/about"><a className={`text-sm font-medium hover:text-primary transition-colors ${location === '/about' ? 'text-primary' : 'text-muted-foreground'}`}>About</a></Link>
           </nav>
 
@@ -52,6 +53,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
             <nav className="flex flex-col gap-4">
               <Link href="/"><a className="text-base font-medium" onClick={() => setIsMenuOpen(false)}>Home</a></Link>
               <Link href="/dashboard"><a className="text-base font-medium" onClick={() => setIsMenuOpen(false)}>Constituency Dashboard</a></Link>
+              <Link href="/report-issue"><a className="text-base font-medium" onClick={() => setIsMenuOpen(false)}>Report Issue</a></Link>
               <Link href="/about"><a className="text-base font-medium" onClick={() => setIsMenuOpen(false)}>About</a></Link>
             </nav>
             <div className="pt-4 border-t">
