@@ -1,6 +1,6 @@
 import { Layout } from "@/components/layout";
 import { MOCK_CANDIDATES } from "@/lib/mock-data";
-import { useLocation } from "wouter";
+import { useLocation, Link } from "wouter";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 
@@ -40,7 +40,7 @@ export default function ComparePage() {
             {candidates.length > 1 ? `Compare Candidates: ${currentWard}` : `Candidate Details: ${candidates[0].name}`}
           </h1>
           <p className="text-lg text-muted-foreground">
-            {candidates.length > 1 
+            {candidates.length > 1
               ? "Row-by-row comparison of candidate credentials and key manifesto promises."
               : "Detailed breakdown of metrics for the selected candidate."}
           </p>
@@ -65,14 +65,16 @@ export default function ComparePage() {
               return (
                 <TableRow key={c.id} className="hover:bg-muted/5">
                   <TableCell className="border-r py-6">
-                    <div className="flex items-center gap-4">
-                      <img src={c.image} alt={c.name} className="w-16 h-16 rounded-xl object-cover border-2 border-background shadow-sm" />
-                      <div>
-                        <div className="font-serif font-bold text-primary text-base leading-tight">{c.name}</div>
-                        <Badge variant="outline" className="mt-1 text-[10px] uppercase font-bold tracking-wider">{c.party}</Badge>
-                        <div className="text-[10px] text-muted-foreground mt-1 uppercase tracking-tighter font-bold">{c.ward}</div>
+                    <Link href={`/candidate/${c.id}`}>
+                      <div className="flex items-center gap-4 cursor-pointer hover:opacity-80 transition-opacity">
+                        <img src={c.image} alt={c.name} className="w-16 h-16 rounded-xl object-cover border-2 border-background shadow-sm" />
+                        <div>
+                          <div className="font-serif font-bold text-primary text-base leading-tight">{c.name}</div>
+                          <Badge variant="outline" className="mt-1 text-[10px] uppercase font-bold tracking-wider">{c.party}</Badge>
+                          <div className="text-[10px] text-muted-foreground mt-1 uppercase tracking-tighter font-bold">{c.ward}</div>
+                        </div>
                       </div>
-                    </div>
+                    </Link>
                   </TableCell>
                   <TableCell className="text-center font-bold text-lg border-r">
                     <span className={c.criminalCases > 0 ? "text-destructive" : "text-green-600"}>
