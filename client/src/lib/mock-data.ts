@@ -97,6 +97,22 @@ export const MOCK_CANDIDATES: Candidate[] = [
     funds: { allocated: 200000000, utilized: 95000000, projects: [] }
   },
   {
+    id: "3-alt",
+    name: "Karan Johar",
+    party: "INC",
+    constituency: "Mumbai North East",
+    ward: "Ward 3",
+    age: 44,
+    education: "Graduate",
+    image: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&q=80&w=256",
+    criminalCases: 0,
+    assets: "₹8 Cr",
+    attendance: 82,
+    bio: "Promising fresh perspective and youth-centric policies for Ward 3.",
+    promises: generateMockPromises("3-alt"),
+    funds: { allocated: 150000000, utilized: 40000000, projects: [] }
+  },
+  {
     id: "4",
     name: "Rahul Deshmukh",
     party: "MNS",
@@ -111,6 +127,22 @@ export const MOCK_CANDIDATES: Candidate[] = [
     bio: "Focused on local Marathi culture and employment.",
     promises: generateMockPromises("4"),
     funds: { allocated: 50000000, utilized: 30000000, projects: [] }
+  },
+  {
+    id: "4-alt",
+    name: "Sanjay Raut",
+    party: "Shiv Sena (UBT)",
+    constituency: "Dadar",
+    ward: "Ward 4",
+    age: 58,
+    education: "Graduate",
+    image: "https://images.unsplash.com/photo-1542909168-82c3e7fdca5c?auto=format&fit=crop&q=80&w=256",
+    criminalCases: 5,
+    assets: "₹12 Cr",
+    attendance: 60,
+    bio: "Strong grassroots leader with deep roots in Dadar's political history.",
+    promises: generateMockPromises("4-alt"),
+    funds: { allocated: 120000000, utilized: 80000000, projects: [] }
   },
   {
     id: "5",
