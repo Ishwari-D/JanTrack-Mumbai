@@ -41,7 +41,7 @@ export default function ComparePage() {
           </h1>
           <p className="text-lg text-muted-foreground">
             {candidates.length > 1 
-              ? "Row-by-row comparison of all verified candidates contesting in this ward."
+              ? "Row-by-row comparison of candidate credentials and key manifesto promises."
               : "Detailed breakdown of metrics for the selected candidate."}
           </p>
         </div>
@@ -51,12 +51,12 @@ export default function ComparePage() {
         <Table className="min-w-[1000px] border shadow-sm">
           <TableHeader className="bg-muted/50">
             <TableRow>
-              <TableHead className="font-bold py-6 text-primary border-r">Candidate</TableHead>
-              <TableHead className="text-center font-bold py-6 text-primary border-r">Criminal Cases</TableHead>
-              <TableHead className="text-center font-bold py-6 text-primary border-r">Education</TableHead>
-              <TableHead className="text-center font-bold py-6 text-primary border-r">Net Assets</TableHead>
-              <TableHead className="text-center font-bold py-6 text-primary border-r">Attendance</TableHead>
-              <TableHead className="text-center font-bold py-6 text-primary">Manifesto Score</TableHead>
+              <TableHead className="font-bold py-6 text-primary border-r w-[250px]">Candidate</TableHead>
+              <TableHead className="text-center font-bold py-6 text-primary border-r w-[120px]">Criminal Cases</TableHead>
+              <TableHead className="text-center font-bold py-6 text-primary border-r w-[180px]">Education</TableHead>
+              <TableHead className="text-center font-bold py-6 text-primary border-r w-[150px]">Net Assets</TableHead>
+              <TableHead className="font-bold py-6 text-primary border-r w-[350px]">Key Manifesto Promises</TableHead>
+              <TableHead className="text-center font-bold py-6 text-primary w-[120px]">Track Record</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -81,18 +81,23 @@ export default function ComparePage() {
                   </TableCell>
                   <TableCell className="text-center text-sm font-medium border-r">{c.education}</TableCell>
                   <TableCell className="text-center font-bold border-r">{c.assets}</TableCell>
-                  <TableCell className="text-center border-r">
-                    <div className="flex flex-col items-center justify-center gap-2">
-                      <div className="w-20 bg-muted h-2 rounded-full overflow-hidden shadow-inner">
-                        <div className="bg-primary h-full transition-all duration-1000" style={{ width: `${c.attendance}%` }}></div>
-                      </div>
-                      <span className="text-xs font-bold text-primary">{c.attendance}%</span>
-                    </div>
+                  <TableCell className="border-r py-4 px-6">
+                    <ul className="space-y-3">
+                      {c.promises.slice(0, 2).map((p, i) => (
+                        <li key={i} className="text-xs flex gap-2 items-start">
+                          <div className="w-1.5 h-1.5 rounded-full bg-primary mt-1.5 shrink-0" />
+                          <div className="flex flex-col gap-0.5">
+                            <span className="font-bold text-primary/80 uppercase tracking-tighter text-[9px]">{p.category}</span>
+                            <span className="italic text-muted-foreground leading-tight">{p.title}</span>
+                          </div>
+                        </li>
+                      ))}
+                    </ul>
                   </TableCell>
                   <TableCell className="text-center">
                     <div className="flex flex-col items-center">
                       <span className="text-2xl font-serif font-bold text-primary">{score}%</span>
-                      <span className="text-[9px] text-muted-foreground uppercase font-bold tracking-tighter">Promise Fulfillment</span>
+                      <span className="text-[9px] text-muted-foreground uppercase font-bold tracking-tighter">Fulfilled</span>
                     </div>
                   </TableCell>
                 </TableRow>
