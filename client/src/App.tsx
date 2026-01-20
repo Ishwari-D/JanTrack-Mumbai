@@ -11,12 +11,14 @@ import ReportIssue from "@/pages/report-issue";
 import WardMap from "@/pages/ward-map";
 import AuthPage from "@/pages/auth";
 import CandidatesPage from "@/pages/candidates";
+import ComparePage from "@/pages/compare";
 
 function Router() {
   return (
     <Switch>
       <Route path="/" component={Home} />
       <Route path="/candidates" component={CandidatesPage} />
+      <Route path="/compare" component={ComparePage} />
       <Route path="/candidate/:id" component={CandidateProfile} />
       <Route path="/dashboard" component={Dashboard} />
       <Route path="/ward-map" component={WardMap} />

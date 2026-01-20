@@ -1,10 +1,12 @@
 import { Layout } from "@/components/layout";
 import { MOCK_CANDIDATES } from "@/lib/mock-data";
 import { CandidateCard } from "@/components/candidate-card";
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Search } from "lucide-react";
+import { Search, ArrowLeftRight } from "lucide-react";
 import { useState } from "react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Link } from "wouter";
 
 export default function CandidatesPage() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -27,10 +29,21 @@ export default function CandidatesPage() {
     <Layout>
       <div className="bg-primary/5 border-b">
         <div className="container mx-auto px-4 py-12">
-          <h1 className="text-4xl font-serif font-bold text-primary mb-4">Mumbai Candidates 2026</h1>
-          <p className="text-lg text-muted-foreground">
-            Browse and filter through all verified candidates across Mumbai's BMC wards.
-          </p>
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+            <div>
+              <h1 className="text-4xl font-serif font-bold text-primary mb-4">Mumbai Candidates 2026</h1>
+              <p className="text-lg text-muted-foreground">
+                Browse and filter through all verified candidates across Mumbai's BMC wards.
+              </p>
+            </div>
+            {wardFilter !== "all" && (
+              <Link href={`/compare?ward=${wardFilter}`}>
+                <Button className="gap-2 bg-secondary text-primary hover:bg-secondary/90 shadow-lg shadow-secondary/20">
+                  <ArrowLeftRight size={18} /> Compare Ward Candidates
+                </Button>
+              </Link>
+            )}
+          </div>
         </div>
       </div>
 
