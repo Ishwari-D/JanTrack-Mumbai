@@ -3,7 +3,7 @@ import { Candidate } from "@/lib/mock-data";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { ShieldCheck, AlertCircle, Briefcase, GraduationCap } from "lucide-react";
+import { ShieldCheck, AlertCircle, Briefcase, GraduationCap, ArrowLeftRight } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 
 export function CandidateCard({ candidate }: { candidate: Candidate }) {
@@ -75,10 +75,15 @@ export function CandidateCard({ candidate }: { candidate: Candidate }) {
         </div>
       </CardContent>
 
-      <CardFooter className="pt-2">
+      <CardFooter className="pt-2 flex flex-col gap-2">
         <Link href={`/candidate/${candidate.id}`}>
           <Button className="w-full rounded-full group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
             View Report Card
+          </Button>
+        </Link>
+        <Link href={`/compare?ward=${candidate.ward}`}>
+          <Button variant="outline" className="w-full rounded-full gap-2 border-secondary/30 text-secondary-foreground hover:bg-secondary/10">
+            <ArrowLeftRight size={16} /> Compare {candidate.ward} Candidates
           </Button>
         </Link>
       </CardFooter>
