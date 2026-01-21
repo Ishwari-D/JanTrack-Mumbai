@@ -22,9 +22,9 @@ export default function AuthPage() {
               {isLogin ? "Welcome Back" : "Create Account"}
             </CardTitle>
             <CardDescription>
-              {isLogin 
-                ? "Enter your credentials to access your voter profile" 
-                : "Join MumbaiTracker to participate in verified civic feedback"}
+              {isLogin
+                ? "Enter your credentials to access your voter profile"
+                : "Join JanTrack Mumbai to participate in verified civic feedback"}
             </CardDescription>
           </CardHeader>
           <CardContent>

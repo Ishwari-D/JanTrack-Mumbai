@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Search, MapPin, TrendingUp, Users } from "lucide-react";
 import { Link } from "wouter";
-import generatedImage from '@assets/generated_images/abstract_civic_data_map_background.png';
+
 
 export default function Home() {
   return (
@@ -13,11 +13,11 @@ export default function Home() {
       {/* Hero Section */}
       <section className="relative bg-primary overflow-hidden min-h-[600px] flex items-center">
         {/* Background Image with Overlay */}
-        <div className="absolute inset-0 z-0 opacity-20">
-          <img src={generatedImage} alt="Civic Data Map" className="w-full h-full object-cover" />
+        <div className="absolute inset-0 z-0">
+          <img src={"https://images.unsplash.com/photo-1570168007204-dfb528c6958f?q=80&w=2070&auto=format&fit=crop"} alt="Civic Data Map" className="w-full h-full object-cover" />
         </div>
-        <div className="absolute inset-0 z-1 bg-gradient-to-r from-primary via-primary/95 to-primary/60"></div>
-        
+        <div className="absolute inset-0 z-1 bg-gradient-to-r from-primary/95 via-primary/80 to-primary/40"></div>
+
         <div className="container mx-auto px-4 relative z-10 grid md:grid-cols-2 gap-12 items-center">
           <div className="space-y-6 animate-in slide-in-from-left-5 duration-700">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-secondary/10 border border-secondary/20 text-secondary text-sm font-medium">
@@ -27,22 +27,22 @@ export default function Home() {
               </span>
               Mumbai Elections 2026 Tracker Live
             </div>
-            
+
             <h1 className="text-4xl md:text-6xl font-serif font-bold text-white leading-tight">
               Know Your Leader.<br />
               <span className="text-secondary">Vote Informed.</span>
             </h1>
-            
+
             <p className="text-lg text-primary-foreground/80 max-w-xl leading-relaxed">
-              The verified digital report card for every candidate. Track manifesto promises, 
+              The verified digital report card for every candidate. Track manifesto promises,
               scrutinize funds, and make your vote count with real data.
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 pt-4">
               <div className="relative flex-1">
                 <Search className="absolute left-3 top-3.5 h-5 w-5 text-muted-foreground" />
-                <Input 
-                  placeholder="Search by candidate or constituency..." 
+                <Input
+                  placeholder="Search by candidate or constituency..."
                   className="pl-10 h-12 bg-white/90 border-transparent text-foreground placeholder:text-muted-foreground focus:bg-white text-lg shadow-lg"
                 />
               </div>
@@ -55,42 +55,42 @@ export default function Home() {
           <div className="hidden md:block relative animate-in slide-in-from-right-5 duration-1000 delay-200">
             {/* Abstract UI composition */}
             <div className="relative z-10 bg-white/5 backdrop-blur-sm rounded-2xl p-6 border border-white/10 shadow-2xl">
-               <div className="flex items-center justify-between mb-6 border-b border-white/10 pb-4">
-                 <div className="flex items-center gap-3">
-                   <div className="w-10 h-10 rounded-full bg-secondary flex items-center justify-center font-bold text-primary">RK</div>
-                   <div>
-                     <div className="text-white font-serif font-bold">Rajesh Kumar</div>
-                     <div className="text-white/60 text-xs">South City • Progress Party</div>
-                   </div>
-                 </div>
-                 <div className="text-right">
-                   <div className="text-2xl font-bold text-green-400">85%</div>
-                   <div className="text-white/40 text-xs uppercase tracking-wider">Promise Score</div>
-                 </div>
-               </div>
-               
-               <div className="space-y-4">
-                 <div className="bg-white/5 p-3 rounded-lg border border-white/5">
-                    <div className="flex justify-between text-sm mb-2">
-                      <span className="text-white/80">Metro Expansion</span>
-                      <span className="text-secondary text-xs bg-secondary/10 px-2 py-0.5 rounded">In Progress</span>
-                    </div>
-                    <div className="h-1.5 w-full bg-white/10 rounded-full overflow-hidden">
-                      <div className="h-full bg-secondary w-[60%]"></div>
-                    </div>
-                 </div>
-                 <div className="bg-white/5 p-3 rounded-lg border border-white/5">
-                    <div className="flex justify-between text-sm mb-2">
-                      <span className="text-white/80">New Public Library</span>
-                      <span className="text-green-400 text-xs bg-green-400/10 px-2 py-0.5 rounded">Completed</span>
-                    </div>
-                    <div className="h-1.5 w-full bg-white/10 rounded-full overflow-hidden">
-                      <div className="h-full bg-green-400 w-[100%]"></div>
-                    </div>
-                 </div>
-               </div>
+              <div className="flex items-center justify-between mb-6 border-b border-white/10 pb-4">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-full bg-secondary flex items-center justify-center font-bold text-primary">RK</div>
+                  <div>
+                    <div className="text-white font-serif font-bold">Rajesh Kumar</div>
+                    <div className="text-white/60 text-xs">South City • Progress Party</div>
+                  </div>
+                </div>
+                <div className="text-right">
+                  <div className="text-2xl font-bold text-green-400">85%</div>
+                  <div className="text-white/40 text-xs uppercase tracking-wider">Promise Score</div>
+                </div>
+              </div>
+
+              <div className="space-y-4">
+                <div className="bg-white/5 p-3 rounded-lg border border-white/5">
+                  <div className="flex justify-between text-sm mb-2">
+                    <span className="text-white/80">Metro Expansion</span>
+                    <span className="text-secondary text-xs bg-secondary/10 px-2 py-0.5 rounded">In Progress</span>
+                  </div>
+                  <div className="h-1.5 w-full bg-white/10 rounded-full overflow-hidden">
+                    <div className="h-full bg-secondary w-[60%]"></div>
+                  </div>
+                </div>
+                <div className="bg-white/5 p-3 rounded-lg border border-white/5">
+                  <div className="flex justify-between text-sm mb-2">
+                    <span className="text-white/80">New Public Library</span>
+                    <span className="text-green-400 text-xs bg-green-400/10 px-2 py-0.5 rounded">Completed</span>
+                  </div>
+                  <div className="h-1.5 w-full bg-white/10 rounded-full overflow-hidden">
+                    <div className="h-full bg-green-400 w-[100%]"></div>
+                  </div>
+                </div>
+              </div>
             </div>
-            
+
             {/* Decorative background elements */}
             <div className="absolute -top-10 -right-10 w-32 h-32 bg-secondary/20 rounded-full blur-3xl"></div>
             <div className="absolute -bottom-10 -left-10 w-48 h-48 bg-blue-500/20 rounded-full blur-3xl"></div>
@@ -142,11 +142,11 @@ export default function Home() {
               <CandidateCard key={candidate.id} candidate={candidate} />
             ))}
           </div>
-          
+
           <div className="mt-10 text-center md:hidden">
-             <Link href="/candidates">
-                <Button variant="outline" className="w-full">View All Candidates</Button>
-             </Link>
+            <Link href="/candidates">
+              <Button variant="outline" className="w-full">View All Candidates</Button>
+            </Link>
           </div>
         </div>
       </section>
@@ -171,7 +171,7 @@ export default function Home() {
                 We digitize election manifestos and track the status of every single promise made, updating them with real-world evidence.
               </p>
             </div>
-            
+
             <div className="bg-card p-8 rounded-2xl border hover:border-primary/20 hover:shadow-xl transition-all">
               <div className="w-12 h-12 bg-secondary/20 rounded-xl flex items-center justify-center text-secondary-foreground mb-6">
                 <MapPin size={24} />
