@@ -14,8 +14,43 @@ export function CandidateCard({ candidate }: { candidate: Candidate }) {
 
   return (
     <Card className="group overflow-hidden border-white/20 bg-white/70 dark:bg-slate-900/60 backdrop-blur-md shadow-lg hover:shadow-2xl hover:-translate-y-1 transition-all duration-300">
-      <div className="relative h-32 bg-gradient-to-r from-primary/10 to-primary/5">
-        <div className="absolute top-4 right-4">
+      <div className="relative h-32 bg-gradient-to-r from-primary/10 to-primary/5 overflow-hidden">
+        {candidate.party === "BJP" && (
+          <img
+            src="/assets/bjp-bg-final.png"
+            alt="BJP Background"
+            className="absolute inset-0 w-full h-full object-cover opacity-80"
+          />
+        )}
+        {candidate.party === "MNS" && (
+          <img
+            src="/assets/mns-bg-final.png"
+            alt="MNS Background"
+            className="absolute inset-0 w-full h-full object-cover opacity-80"
+          />
+        )}
+        {candidate.party === "INC" && (
+          <img
+            src="/assets/inc-bg-final.png"
+            alt="INC Background"
+            className="absolute inset-0 w-full h-full object-cover opacity-80"
+          />
+        )}
+        {candidate.party.includes("UBT") && (
+          <img
+            src="/assets/shiv-sena-ubt.png"
+            alt="Shiv Sena UBT Background"
+            className="absolute inset-0 w-full h-full object-cover opacity-80"
+          />
+        )}
+        {(candidate.party === "Shiv Sena" || candidate.party === "SS" || (candidate.party.includes("Shiv Sena") && !candidate.party.includes("UBT"))) && (
+          <img
+            src="/assets/shiv-sena-bow.png"
+            alt="Shiv Sena Background"
+            className="absolute inset-0 w-full h-full object-cover opacity-80"
+          />
+        )}
+        <div className="absolute top-4 right-4 z-10">
           <Badge variant={candidate.criminalCases > 0 ? "destructive" : "secondary"} className="font-medium">
             {candidate.criminalCases > 0 ? (
               <span className="flex items-center gap-1">

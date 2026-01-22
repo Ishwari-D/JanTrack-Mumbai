@@ -1,5 +1,4 @@
 import { useRoute } from "wouter";
-import { MOCK_CANDIDATES } from "@/lib/mock-data";
 import { Layout } from "@/components/layout";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -7,27 +6,35 @@ import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent } from "@/components/ui/card";
 import { FundUtilizationChart } from "@/components/fund-chart";
-import { 
-  CheckCircle2, 
-  Clock, 
-  AlertCircle, 
-  MapPin, 
-  GraduationCap, 
-  Briefcase, 
-  Gavel, 
+import {
+  CheckCircle2,
+  Clock,
+  AlertCircle,
+  MapPin,
+  GraduationCap,
+  Briefcase,
+  Gavel,
   Calendar,
   Share2,
   Flag,
-  Users
+  Users,
+  Loader2
 } from "lucide-react";
 
 import { useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Textarea } from "@/components/ui/textarea";
+import { useQuery } from "@tanstack/react-query";
+import { Candidate } from "@/lib/mock-data";
 
 export default function CandidateProfile() {
   const [, params] = useRoute("/candidate/:id");
-  const candidate = MOCK_CANDIDATES.find(c => c.id === params?.id);
+
+  const { data: candidate, isLoading, error } = useQuery<Candidate>({
+    queryKey: [`/api/candidates/${params?.id}`],
+    enabled: !!params?.id
+  });
+
   const [feedback, setFeedback] = useState([
     { id: 1, user: "Amit S.", date: "2 days ago", text: "The coastal road progress is visible, but the traffic management near Worli is still a mess.", rating: 4 },
     { id: 2, user: "Neha K.", date: "1 week ago", text: "Promised school digital labs are great, but teacher training is missing.", rating: 3 }
@@ -46,7 +53,17 @@ export default function CandidateProfile() {
     setNewComment("");
   };
 
-  if (!candidate) {
+  if (isLoading) {
+    return (
+      <Layout>
+        <div className="flex justify-center items-center h-[50vh]">
+          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        </div>
+      </Layout>
+    );
+  }
+
+  if (error || !candidate) {
     return <Layout><div className="container mx-auto p-20 text-center">Candidate not found</div></Layout>;
   }
 
@@ -56,7 +73,7 @@ export default function CandidateProfile() {
   const notStarted = candidate.promises.filter(p => p.status === 'not-started').length;
   const broken = candidate.promises.filter(p => p.status === 'broken').length;
   const total = candidate.promises.length;
-  const score = Math.round((completed / total) * 100);
+  const score = total > 0 ? Math.round((completed / total) * 100) : 0;
 
   return (
     <Layout>
@@ -66,9 +83,9 @@ export default function CandidateProfile() {
           <div className="flex flex-col md:flex-row gap-8 items-start">
             <div className="relative group">
               <div className="absolute -inset-1 bg-gradient-to-br from-primary to-secondary rounded-2xl blur opacity-20 group-hover:opacity-40 transition duration-500"></div>
-              <img 
-                src={candidate.image} 
-                alt={candidate.name} 
+              <img
+                src={candidate.image}
+                alt={candidate.name}
                 className="relative w-48 h-48 rounded-xl object-cover shadow-xl border-4 border-background"
               />
               <div className="absolute -bottom-3 -right-3 bg-background p-2 rounded-full shadow-lg border">
@@ -81,18 +98,18 @@ export default function CandidateProfile() {
             <div className="flex-1 space-y-4">
               <div className="flex flex-col md:flex-row justify-between items-start gap-4">
                 <div>
-                   <div className="flex items-center gap-3 mb-2">
-                     <Badge variant="outline" className="border-primary/20 text-primary bg-primary/5">
-                        {candidate.party}
-                     </Badge>
-                     <Badge variant="secondary" className="bg-secondary/20 text-secondary-foreground hover:bg-secondary/30">
-                        <MapPin size={12} className="mr-1" /> {candidate.constituency}
-                     </Badge>
-                   </div>
-                   <h1 className="text-4xl font-serif font-bold text-foreground">{candidate.name}</h1>
-                   <p className="text-muted-foreground mt-2 max-w-2xl">{candidate.bio}</p>
+                  <div className="flex items-center gap-3 mb-2">
+                    <Badge variant="outline" className="border-primary/20 text-primary bg-primary/5">
+                      {candidate.party}
+                    </Badge>
+                    <Badge variant="secondary" className="bg-secondary/20 text-secondary-foreground hover:bg-secondary/30">
+                      <MapPin size={12} className="mr-1" /> {candidate.constituency}
+                    </Badge>
+                  </div>
+                  <h1 className="text-4xl font-serif font-bold text-foreground">{candidate.name}</h1>
+                  <p className="text-muted-foreground mt-2 max-w-2xl">{candidate.bio}</p>
                 </div>
-                
+
                 <div className="flex gap-2">
                   <Button variant="outline" size="sm" className="gap-2">
                     <Share2 size={16} /> Share
@@ -105,32 +122,32 @@ export default function CandidateProfile() {
 
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4 pt-6">
                 <div className="bg-muted/30 p-4 rounded-lg border border-border/50">
-                   <div className="text-muted-foreground text-xs uppercase tracking-wider mb-1">Education</div>
-                   <div className="font-semibold flex items-center gap-2">
-                     <GraduationCap size={16} className="text-primary" />
-                     <span className="truncate">{candidate.education}</span>
-                   </div>
+                  <div className="text-muted-foreground text-xs uppercase tracking-wider mb-1">Education</div>
+                  <div className="font-semibold flex items-center gap-2">
+                    <GraduationCap size={16} className="text-primary" />
+                    <span className="truncate">{candidate.education}</span>
+                  </div>
                 </div>
                 <div className="bg-muted/30 p-4 rounded-lg border border-border/50">
-                   <div className="text-muted-foreground text-xs uppercase tracking-wider mb-1">Net Assets</div>
-                   <div className="font-semibold flex items-center gap-2">
-                     <Briefcase size={16} className="text-primary" />
-                     {candidate.assets}
-                   </div>
+                  <div className="text-muted-foreground text-xs uppercase tracking-wider mb-1">Net Assets</div>
+                  <div className="font-semibold flex items-center gap-2">
+                    <Briefcase size={16} className="text-primary" />
+                    {candidate.assets}
+                  </div>
                 </div>
                 <div className="bg-muted/30 p-4 rounded-lg border border-border/50">
-                   <div className="text-muted-foreground text-xs uppercase tracking-wider mb-1">Criminal Record</div>
-                   <div className="font-semibold flex items-center gap-2">
-                     <Gavel size={16} className={candidate.criminalCases > 0 ? "text-destructive" : "text-green-600"} />
-                     {candidate.criminalCases} Cases
-                   </div>
+                  <div className="text-muted-foreground text-xs uppercase tracking-wider mb-1">Criminal Record</div>
+                  <div className="font-semibold flex items-center gap-2">
+                    <Gavel size={16} className={candidate.criminalCases > 0 ? "text-destructive" : "text-green-600"} />
+                    {candidate.criminalCases} Cases
+                  </div>
                 </div>
                 <div className="bg-muted/30 p-4 rounded-lg border border-border/50">
-                   <div className="text-muted-foreground text-xs uppercase tracking-wider mb-1">Attendance</div>
-                   <div className="font-semibold flex items-center gap-2">
-                     <Calendar size={16} className="text-primary" />
-                     {candidate.attendance}%
-                   </div>
+                  <div className="text-muted-foreground text-xs uppercase tracking-wider mb-1">Attendance</div>
+                  <div className="font-semibold flex items-center gap-2">
+                    <Calendar size={16} className="text-primary" />
+                    {candidate.attendance}%
+                  </div>
                 </div>
               </div>
             </div>
@@ -155,7 +172,7 @@ export default function CandidateProfile() {
                     <div className="text-5xl font-serif font-bold text-primary mb-2">{score}%</div>
                     <div className="text-sm text-muted-foreground font-medium uppercase tracking-widest">Promise Fulfillment Score</div>
                   </div>
-                  
+
                   <div className="space-y-4">
                     <div className="flex justify-between text-sm items-center">
                       <span className="flex items-center gap-2"><CheckCircle2 size={16} className="text-green-600" /> Completed</span>
@@ -181,24 +198,24 @@ export default function CandidateProfile() {
               <div className="md:col-span-2 space-y-4">
                 {candidate.promises.map((promise) => (
                   <Card key={promise.id} className="overflow-hidden border-l-4" style={{
-                    borderLeftColor: 
+                    borderLeftColor:
                       promise.status === 'completed' ? 'var(--color-green-500)' :
-                      promise.status === 'in-progress' ? 'hsl(var(--secondary))' :
-                      promise.status === 'broken' ? 'hsl(var(--destructive))' : 'hsl(var(--muted))'
+                        promise.status === 'in-progress' ? 'hsl(var(--secondary))' :
+                          promise.status === 'broken' ? 'hsl(var(--destructive))' : 'hsl(var(--muted))'
                   }}>
                     <CardContent className="p-6">
                       <div className="flex justify-between items-start mb-4">
                         <div className="space-y-1">
                           <div className="flex items-center gap-2 mb-2">
-                             <Badge variant="outline" className="text-xs uppercase font-normal tracking-wider opacity-70">{promise.category}</Badge>
-                             <span className={`text-xs font-bold px-2 py-0.5 rounded-full capitalize
-                               ${promise.status === 'completed' ? 'bg-green-100 text-green-700' : 
-                                 promise.status === 'in-progress' ? 'bg-amber-100 text-amber-700' :
-                                 promise.status === 'broken' ? 'bg-red-100 text-red-700' : 'bg-gray-100 text-gray-700'
-                               }
+                            <Badge variant="outline" className="text-xs uppercase font-normal tracking-wider opacity-70">{promise.category}</Badge>
+                            <span className={`text-xs font-bold px-2 py-0.5 rounded-full capitalize
+                               ${promise.status === 'completed' ? 'bg-green-100 text-green-700' :
+                                promise.status === 'in-progress' ? 'bg-amber-100 text-amber-700' :
+                                  promise.status === 'broken' ? 'bg-red-100 text-red-700' : 'bg-gray-100 text-gray-700'
+                              }
                              `}>
-                               {promise.status.replace('-', ' ')}
-                             </span>
+                              {promise.status.replace('-', ' ')}
+                            </span>
                           </div>
                           <h3 className="font-serif font-bold text-xl">{promise.title}</h3>
                         </div>
@@ -206,9 +223,9 @@ export default function CandidateProfile() {
                           <span className="text-2xl font-bold text-muted-foreground/50">{promise.completionPercentage}%</span>
                         </div>
                       </div>
-                      
+
                       <p className="text-muted-foreground mb-4">{promise.description}</p>
-                      
+
                       <div className="relative pt-2">
                         <Progress value={promise.completionPercentage} className="h-2" />
                       </div>
@@ -220,7 +237,7 @@ export default function CandidateProfile() {
           </TabsContent>
 
           <TabsContent value="funds" className="animate-in fade-in-50 duration-500">
-             <FundUtilizationChart funds={candidate.funds} />
+            <FundUtilizationChart funds={candidate.funds} />
           </TabsContent>
 
           <TabsContent value="feedback" className="animate-in fade-in-50 duration-500">
@@ -228,8 +245,8 @@ export default function CandidateProfile() {
               <Card>
                 <CardContent className="pt-6 space-y-4">
                   <h3 className="font-serif font-bold text-lg">Leave verified feedback</h3>
-                  <Textarea 
-                    placeholder="Share your experience with this candidate's work..." 
+                  <Textarea
+                    placeholder="Share your experience with this candidate's work..."
                     value={newComment}
                     onChange={(e) => setNewComment(e.target.value)}
                   />
