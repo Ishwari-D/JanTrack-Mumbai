@@ -106,9 +106,13 @@ export default function Home() {
                   className="pl-10 h-12 bg-white/90 border-transparent text-foreground placeholder:text-muted-foreground focus:bg-white text-lg shadow-lg"
                 />
               </div>
-              <Button size="lg" className="h-12 px-8 bg-secondary text-primary hover:bg-white hover:text-primary font-bold shadow-lg shadow-secondary/20">
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className="h-12 px-8 bg-secondary text-primary hover:bg-white hover:text-primary font-bold shadow-lg shadow-secondary/20 rounded-md inline-flex items-center justify-center text-sm ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
+              >
                 Search
-              </Button>
+              </motion.button>
             </div>
           </motion.div>
 

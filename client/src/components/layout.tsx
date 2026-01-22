@@ -1,5 +1,6 @@
 import { Link, useLocation } from "wouter";
-import { Search, Menu, X, ShieldCheck } from "lucide-react";
+import { Search, Menu, X, ShieldCheck, Twitter, Facebook, Linkedin, Github } from "lucide-react";
+import { motion } from "framer-motion";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -23,11 +24,25 @@ export function Layout({ children }: { children: React.ReactNode }) {
 
           {/* Desktop Nav */}
           <nav className="hidden md:flex items-center gap-8">
-            <Link href="/"><a className={`text-sm font-medium hover:text-primary transition-colors ${location === '/' ? 'text-primary' : 'text-muted-foreground'}`}>Home</a></Link>
-            <Link href="/candidates"><a className={`text-sm font-medium hover:text-primary transition-colors ${location === '/candidates' ? 'text-primary' : 'text-muted-foreground'}`}>Candidates</a></Link>
-            <Link href="/ward-map"><a className={`text-sm font-medium hover:text-primary transition-colors ${location === '/ward-map' ? 'text-primary' : 'text-muted-foreground'}`}>Ward Map</a></Link>
-            <Link href="/dashboard"><a className={`text-sm font-medium hover:text-primary transition-colors ${location === '/dashboard' ? 'text-primary' : 'text-muted-foreground'}`}>Dashboard</a></Link>
-            <Link href="/report-issue"><a className={`text-sm font-medium hover:text-primary transition-colors ${location === '/report-issue' ? 'text-primary' : 'text-muted-foreground'}`}>Report Issue</a></Link>
+            {[
+              ['Home', '/'],
+              ['Candidates', '/candidates'],
+              ['Ward Map', '/ward-map'],
+              ['Dashboard', '/dashboard'],
+              ['Report Issue', '/report-issue']
+            ].map(([label, path]) => (
+              <Link key={path} href={path}>
+                <a className={`text-sm font-medium transition-colors relative py-1 ${location === path ? 'text-primary' : 'text-muted-foreground hover:text-primary'}`}>
+                  {label}
+                  {location === path && (
+                    <motion.div
+                      layoutId="underline"
+                      className="absolute left-0 top-full block h-[2px] w-full bg-secondary"
+                    />
+                  )}
+                </a>
+              </Link>
+            ))}
           </nav>
 
           <div className="hidden md:flex items-center gap-4">
@@ -64,50 +79,73 @@ export function Layout({ children }: { children: React.ReactNode }) {
         {children}
       </main>
 
-      <footer className="border-t bg-muted/30 py-12 mt-20">
-        <div className="container mx-auto px-4 grid md:grid-cols-4 gap-8">
-          <div className="space-y-4">
+      <footer className="bg-primary text-primary-foreground py-16 mt-20">
+        <div className="container mx-auto px-4 grid md:grid-cols-4 gap-12">
+          <div className="space-y-6">
             <div className="flex items-center gap-2">
-              <ShieldCheck className="text-primary" size={24} />
-              <span className="text-xl font-serif font-bold text-primary">JanTrack Mumbai</span>
+              <div className="bg-white/10 p-2 rounded-lg">
+                <ShieldCheck className="text-white" size={24} />
+              </div>
+              <span className="text-2xl font-serif font-bold text-white tracking-tight">JanTrack</span>
             </div>
-            <p className="text-sm text-muted-foreground leading-relaxed">
-              Empowering citizens with verified data for informed democratic participation. Transparency builds trust.
+            <p className="text-primary-foreground/80 text-sm leading-relaxed max-w-xs">
+              Empowering Mumbai citizens with verified data for informed democratic participation. Transparency builds trust.
             </p>
-          </div>
-
-          <div>
-            <h4 className="font-serif font-bold mb-4">Platform</h4>
-            <ul className="space-y-2 text-sm text-muted-foreground">
-              <li><a href="#" className="hover:text-primary">Candidate Search</a></li>
-              <li><a href="#" className="hover:text-primary">Manifesto Tracker</a></li>
-              <li><a href="#" className="hover:text-primary">Fund Utilization</a></li>
-              <li><a href="#" className="hover:text-primary">Report Issue</a></li>
-            </ul>
-          </div>
-
-          <div>
-            <h4 className="font-serif font-bold mb-4">Resources</h4>
-            <ul className="space-y-2 text-sm text-muted-foreground">
-              <li><a href="#" className="hover:text-primary">Voter Guide</a></li>
-              <li><a href="#" className="hover:text-primary">Election Schedule</a></li>
-              <li><a href="#" className="hover:text-primary">Data Sources</a></li>
-              <li><a href="#" className="hover:text-primary">Privacy Policy</a></li>
-            </ul>
-          </div>
-
-          <div>
-            <h4 className="font-serif font-bold mb-4">Connect</h4>
             <div className="flex gap-4">
-              {/* Social placeholders */}
-              <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center hover:bg-primary hover:text-white transition-colors cursor-pointer">X</div>
-              <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center hover:bg-primary hover:text-white transition-colors cursor-pointer">In</div>
-              <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center hover:bg-primary hover:text-white transition-colors cursor-pointer">Fb</div>
+              <a href="#" className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-white hover:text-primary transition-colors">
+                <Twitter size={18} />
+              </a>
+              <a href="#" className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-white hover:text-primary transition-colors">
+                <Facebook size={18} />
+              </a>
+              <a href="#" className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-white hover:text-primary transition-colors">
+                <Linkedin size={18} />
+              </a>
+              <a href="#" className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-white hover:text-primary transition-colors">
+                <Github size={18} />
+              </a>
+            </div>
+          </div>
+
+          <div>
+            <h4 className="font-serif font-bold text-lg mb-6 text-white">Platform</h4>
+            <ul className="space-y-4 text-sm text-primary-foreground/70">
+              <li><a href="#" className="hover:text-white transition-colors">Candidate Search</a></li>
+              <li><a href="#" className="hover:text-white transition-colors">Manifesto Tracker</a></li>
+              <li><a href="#" className="hover:text-white transition-colors">Fund Utilization</a></li>
+              <li><a href="#" className="hover:text-white transition-colors">Report Issue</a></li>
+            </ul>
+          </div>
+
+          <div>
+            <h4 className="font-serif font-bold text-lg mb-6 text-white">Legal & Help</h4>
+            <ul className="space-y-4 text-sm text-primary-foreground/70">
+              <li><a href="#" className="hover:text-white transition-colors">Voter Guide</a></li>
+              <li><a href="#" className="hover:text-white transition-colors">Privacy Policy</a></li>
+              <li><a href="#" className="hover:text-white transition-colors">Terms of Service</a></li>
+              <li><a href="#" className="hover:text-white transition-colors">Contact Support</a></li>
+            </ul>
+          </div>
+
+          <div className="space-y-6">
+            <h4 className="font-serif font-bold text-lg text-white">Stay Informed</h4>
+            <p className="text-sm text-primary-foreground/70">
+              Get the latest candidate analysis and ward reports directly in your inbox.
+            </p>
+            <div className="flex flex-col gap-3">
+              <input
+                type="email"
+                placeholder="Enter your email"
+                className="bg-white/10 border border-white/20 rounded-md px-4 py-2 text-sm text-white placeholder:text-white/50 focus:outline-none focus:ring-2 focus:ring-secondary/50"
+              />
+              <Button className="w-full bg-secondary text-primary hover:bg-white font-bold">
+                Subscribe
+              </Button>
             </div>
           </div>
         </div>
-        <div className="container mx-auto px-4 mt-12 pt-8 border-t text-center text-sm text-muted-foreground">
-          © 2026 JanTrack Mumbai Foundation. All rights reserved.
+        <div className="container mx-auto px-4 mt-16 pt-8 border-t border-white/10 text-center text-sm text-primary-foreground/50">
+          © 2026 JanTrack Mumbai Foundation. All rights reserved. • Built for Democracy.
         </div>
       </footer>
     </div>
