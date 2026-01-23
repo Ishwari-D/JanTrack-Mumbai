@@ -5,27 +5,73 @@ import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { MapPin, Camera, AlertTriangle, ShieldCheck } from "lucide-react";
+import { MapPin, Camera, AlertTriangle, ShieldCheck, Loader2 } from "lucide-react";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { queryClient } from "@/lib/queryClient";
 
 export default function ReportIssue() {
   const { toast } = useToast();
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [file, setFile] = useState<File | null>(null);
+  const [issueType, setIssueType] = useState("");
+  const [constituency, setConstituency] = useState("");
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsSubmitting(true);
-    
-    // Simulate API call
-    setTimeout(() => {
-      setIsSubmitting(false);
+  const { data: issues } = useQuery<any[]>({
+    queryKey: ["/api/issues"],
+  });
+
+  const uploadMutation = useMutation({
+    mutationFn: async (formData: FormData) => {
+      const res = await fetch("/api/issues", {
+        method: "POST",
+        body: formData,
+      });
+      if (!res.ok) throw new Error(await res.text());
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/issues"] });
       toast({
         title: "Issue Reported Successfully",
         description: "Your report has been logged and sent to the verified monitors.",
       });
-      (e.target as HTMLFormElement).reset();
-    }, 1500);
+      setTitle("");
+      setDescription("");
+      setIssueType("");
+      setConstituency("");
+      setFile(null);
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Submission Failed",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!file) {
+      toast({
+        title: "Evidence Required",
+        description: "Please upload an image as evidence.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append("title", title);
+    // Combine type and description for now as backend schema is simple
+    formData.append("description", `[Type: ${issueType}] ${description}`);
+    formData.append("location", constituency);
+    formData.append("image", file);
+
+    uploadMutation.mutate(formData);
   };
 
   return (
@@ -35,7 +81,7 @@ export default function ReportIssue() {
           <div className="max-w-3xl">
             <h1 className="text-4xl font-serif font-bold text-primary mb-4">Report an Issue</h1>
             <p className="text-lg text-muted-foreground">
-              Help us maintain transparency. Report civic issues, manifesto violations, or misinformation in your constituency.
+              Help us maintain transparency. Report civic issues, verified by our team.
             </p>
           </div>
         </div>
@@ -43,7 +89,7 @@ export default function ReportIssue() {
 
       <div className="container mx-auto px-4 py-12">
         <div className="grid md:grid-cols-3 gap-8">
-          <div className="md:col-span-2">
+          <div className="md:col-span-2 space-y-8">
             <Card className="shadow-lg border-primary/10">
               <CardHeader>
                 <CardTitle className="font-serif">Submit New Report</CardTitle>
@@ -54,7 +100,7 @@ export default function ReportIssue() {
                   <div className="grid md:grid-cols-2 gap-4">
                     <div className="space-y-2">
                       <Label htmlFor="type">Issue Type</Label>
-                      <Select required>
+                      <Select value={issueType} onValueChange={setIssueType} required>
                         <SelectTrigger id="type">
                           <SelectValue placeholder="Select type" />
                         </SelectTrigger>
@@ -69,15 +115,15 @@ export default function ReportIssue() {
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="constituency">Constituency</Label>
-                      <Select required>
+                      <Select value={constituency} onValueChange={setConstituency} required>
                         <SelectTrigger id="constituency">
                           <SelectValue placeholder="Select area" />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="south">Mumbai South</SelectItem>
-                          <SelectItem value="north-west">Mumbai North West</SelectItem>
-                          <SelectItem value="north-east">Mumbai North East</SelectItem>
-                          <SelectItem value="central">Mumbai Central</SelectItem>
+                          <SelectItem value="Mumbai South">Mumbai South</SelectItem>
+                          <SelectItem value="Mumbai North West">Mumbai North West</SelectItem>
+                          <SelectItem value="Mumbai North East">Mumbai North East</SelectItem>
+                          <SelectItem value="Mumbai Central">Mumbai Central</SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
@@ -85,34 +131,86 @@ export default function ReportIssue() {
 
                   <div className="space-y-2">
                     <Label htmlFor="title">Report Title</Label>
-                    <Input id="title" placeholder="Brief summary of the issue" required />
+                    <Input id="title" value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Brief summary of the issue" required />
                   </div>
 
                   <div className="space-y-2">
                     <Label htmlFor="description">Detailed Description</Label>
-                    <Textarea 
-                      id="description" 
-                      placeholder="Provide specific details, dates, and names if applicable..." 
+                    <Textarea
+                      id="description"
+                      value={description}
+                      onChange={(e) => setDescription(e.target.value)}
+                      placeholder="Provide specific details..."
                       className="min-h-[150px]"
-                      required 
+                      required
                     />
                   </div>
 
                   <div className="space-y-2">
-                    <Label>Evidence (Photos/Documents)</Label>
-                    <div className="border-2 border-dashed rounded-lg p-8 text-center hover:bg-muted/50 transition-colors cursor-pointer group">
-                      <Camera className="mx-auto h-12 w-12 text-muted-foreground group-hover:text-primary transition-colors" />
-                      <p className="mt-2 text-sm text-muted-foreground">Click to upload or drag and drop files</p>
-                      <p className="text-xs text-muted-foreground/60">JPG, PNG or PDF (Max 5MB)</p>
+                    <Label htmlFor="image-upload">Evidence (Photo)</Label>
+                    <div className="border-2 border-dashed rounded-lg p-6 text-center hover:bg-muted/50 transition-colors relative">
+                      <Input
+                        id="image-upload"
+                        type="file"
+                        accept="image/*"
+                        className="absolute inset-0 opacity-0 cursor-pointer w-full h-full"
+                        onChange={(e) => setFile(e.target.files?.[0] || null)}
+                      />
+                      <div className="pointer-events-none">
+                        {file ? (
+                          <div className="flex flex-col items-center text-primary">
+                            <ShieldCheck className="h-10 w-10 mb-2" />
+                            <p className="font-medium">{file.name}</p>
+                          </div>
+                        ) : (
+                          <>
+                            <Camera className="mx-auto h-10 w-10 text-muted-foreground mb-2" />
+                            <p className="text-sm text-muted-foreground">Click to upload image</p>
+                          </>
+                        )}
+                      </div>
                     </div>
                   </div>
 
-                  <Button type="submit" className="w-full h-12 text-lg font-bold" disabled={isSubmitting}>
-                    {isSubmitting ? "Submitting..." : "Submit Verified Report"}
+                  <Button type="submit" className="w-full h-12 text-lg font-bold" disabled={uploadMutation.isPending}>
+                    {uploadMutation.isPending ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Submitting...</> : "Submit Report"}
                   </Button>
                 </form>
               </CardContent>
             </Card>
+
+            {/* Recent Reports Section */}
+            <div>
+              <h3 className="text-2xl font-serif font-bold text-primary mb-4">Recent Verified Reports</h3>
+              <div className="grid gap-4">
+                {issues?.map((issue: any) => (
+                  <Card key={issue._id} className="flex flex-col md:flex-row overflow-hidden">
+                    <div className="w-full md:w-48 h-48 md:h-auto shrink-0 bg-muted">
+                      <img src={issue.imageUrl} alt={issue.title} className="w-full h-full object-cover" />
+                    </div>
+                    <div className="p-6 flex flex-col justify-center">
+                      <h4 className="font-bold text-lg mb-1">{issue.title}</h4>
+                      <div className="flex items-center text-xs text-muted-foreground mb-3 gap-2">
+                        <span className="flex items-center gap-1"><MapPin size={12} /> {issue.location}</span>
+                        <span>•</span>
+                        <span className="capitalize">{issue.status.replace('_', ' ')}</span>
+                        {issue.isVerified ? (
+                          <span className="inline-flex items-center text-green-600 bg-green-50 px-2 py-0.5 rounded-full text-[10px] font-medium border border-green-200">
+                            <ShieldCheck size={10} className="mr-1" /> Verified
+                          </span>
+                        ) : (
+                          <span className="inline-flex items-center text-amber-600 bg-amber-50 px-2 py-0.5 rounded-full text-[10px] font-medium border border-amber-200">
+                            Pending Verification
+                          </span>
+                        )}
+                      </div>
+                      <p className="text-sm text-muted-foreground line-clamp-2">{issue.description}</p>
+                    </div>
+                  </Card>
+                ))}
+                {issues?.length === 0 && <p className="text-muted-foreground">No public reports yet.</p>}
+              </div>
+            </div>
           </div>
 
           <div className="space-y-6">
@@ -130,7 +228,6 @@ export default function ReportIssue() {
                 <p>4. <strong>Response:</strong> The concerned candidate's office is notified for a response.</p>
               </CardContent>
             </Card>
-
             <Card className="bg-destructive/5 border-destructive/20">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2 text-lg font-serif">
@@ -139,7 +236,7 @@ export default function ReportIssue() {
                 </CardTitle>
               </CardHeader>
               <CardContent className="text-sm space-y-4 text-muted-foreground">
-                <p>Avoid personal attacks or defamatory language. Focus on objective facts, evidence, and civic progress.</p>
+                <p>Avoid personal attacks. Focus on objective civic issues.</p>
               </CardContent>
             </Card>
           </div>

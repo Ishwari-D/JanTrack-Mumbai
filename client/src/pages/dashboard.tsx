@@ -1,18 +1,23 @@
 import { Layout } from "@/components/layout";
-import { MOCK_CANDIDATES } from "@/lib/mock-data";
+import { useQuery } from "@tanstack/react-query";
+import { Candidate } from "@shared/schema";
 import { Bar, BarChart, CartesianGrid, Legend, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 export default function Dashboard() {
+  const { data: candidates } = useQuery<Candidate[]>({
+    queryKey: ["/api/candidates"],
+  });
+
   // Aggregate data for the chart
-  const constituencyData = MOCK_CANDIDATES.map(c => ({
+  const constituencyData = candidates?.map(c => ({
     name: c.constituency,
     allocated: c.funds.allocated,
     utilized: c.funds.utilized,
     candidate: c.name
-  }));
+  })) || [];
 
   const formatCurrency = (value: number) => `₹${(value / 10000000).toFixed(1)}Cr`;
 
@@ -26,7 +31,7 @@ export default function Dashboard() {
       </div>
 
       <div className="container mx-auto px-4 py-8 space-y-8">
-        
+
         {/* Controls */}
         <div className="flex flex-col sm:flex-row gap-4 items-center justify-between bg-card p-4 rounded-lg border shadow-sm">
           <div className="flex gap-4 w-full sm:w-auto">
@@ -65,19 +70,19 @@ export default function Dashboard() {
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={constituencyData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
                   <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--border))" />
-                  <XAxis 
-                    dataKey="name" 
-                    tick={{ fill: 'hsl(var(--muted-foreground))' }} 
-                    axisLine={false}
-                    tickLine={false}
-                  />
-                  <YAxis 
-                    tickFormatter={formatCurrency} 
+                  <XAxis
+                    dataKey="name"
                     tick={{ fill: 'hsl(var(--muted-foreground))' }}
                     axisLine={false}
                     tickLine={false}
                   />
-                  <Tooltip 
+                  <YAxis
+                    tickFormatter={formatCurrency}
+                    tick={{ fill: 'hsl(var(--muted-foreground))' }}
+                    axisLine={false}
+                    tickLine={false}
+                  />
+                  <Tooltip
                     formatter={(value: number) => formatCurrency(value)}
                     contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}
                     cursor={{ fill: 'hsl(var(--muted)/0.2)' }}
@@ -93,44 +98,44 @@ export default function Dashboard() {
 
         {/* Detailed Grid */}
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-           {constituencyData.map((data, i) => (
-             <Card key={i} className="hover:border-primary/30 transition-colors">
-               <CardHeader className="pb-2">
-                 <div className="flex justify-between items-start">
-                   <CardTitle className="text-lg font-serif">{data.name}</CardTitle>
-                   <div className="text-xs font-medium bg-muted px-2 py-1 rounded">
-                     {(data.utilized / data.allocated * 100).toFixed(0)}% Utilized
-                   </div>
-                 </div>
-                 <CardDescription>Rep: {data.candidate}</CardDescription>
-               </CardHeader>
-               <CardContent>
-                 <div className="space-y-4 mt-2">
-                   <div className="space-y-1">
-                     <div className="flex justify-between text-sm">
-                       <span className="text-muted-foreground">Allocated</span>
-                       <span className="font-bold">{formatCurrency(data.allocated)}</span>
-                     </div>
-                     <div className="h-2 bg-muted rounded-full overflow-hidden">
-                       <div className="h-full bg-primary w-full"></div>
-                     </div>
-                   </div>
-                   <div className="space-y-1">
-                     <div className="flex justify-between text-sm">
-                       <span className="text-muted-foreground">Spent</span>
-                       <span className="font-bold">{formatCurrency(data.utilized)}</span>
-                     </div>
-                     <div className="h-2 bg-muted rounded-full overflow-hidden">
-                       <div 
-                         className="h-full bg-secondary" 
-                         style={{ width: `${(data.utilized / data.allocated * 100)}%` }}
-                       ></div>
-                     </div>
-                   </div>
-                 </div>
-               </CardContent>
-             </Card>
-           ))}
+          {constituencyData.map((data, i) => (
+            <Card key={i} className="hover:border-primary/30 transition-colors">
+              <CardHeader className="pb-2">
+                <div className="flex justify-between items-start">
+                  <CardTitle className="text-lg font-serif">{data.name}</CardTitle>
+                  <div className="text-xs font-medium bg-muted px-2 py-1 rounded">
+                    {(data.utilized / data.allocated * 100).toFixed(0)}% Utilized
+                  </div>
+                </div>
+                <CardDescription>Rep: {data.candidate}</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4 mt-2">
+                  <div className="space-y-1">
+                    <div className="flex justify-between text-sm">
+                      <span className="text-muted-foreground">Allocated</span>
+                      <span className="font-bold">{formatCurrency(data.allocated)}</span>
+                    </div>
+                    <div className="h-2 bg-muted rounded-full overflow-hidden">
+                      <div className="h-full bg-primary w-full"></div>
+                    </div>
+                  </div>
+                  <div className="space-y-1">
+                    <div className="flex justify-between text-sm">
+                      <span className="text-muted-foreground">Spent</span>
+                      <span className="font-bold">{formatCurrency(data.utilized)}</span>
+                    </div>
+                    <div className="h-2 bg-muted rounded-full overflow-hidden">
+                      <div
+                        className="h-full bg-secondary"
+                        style={{ width: `${(data.utilized / data.allocated * 100)}%` }}
+                      ></div>
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
         </div>
       </div>
     </Layout>
