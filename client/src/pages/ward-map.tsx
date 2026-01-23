@@ -26,6 +26,7 @@ const WARD_DATA = [
     id: "A",
     name: "Ward A (Colaba/Fort)",
     coords: [18.9218, 72.8347] as [number, number],
+    budgetUrl: "https://www.mcgm.gov.in/irj/go/km/docs/documents/MCGM%20Department%20List/Chief%20Accountant%20(Finance)/Budget/Budget%20Estimate%202025-2026/9-%20Ward%20Wise%20Book%202025-26/4010%20A.pdf",
     subWards: [
       { number: "224-A", name: "Mahatma Phule Market – Churchgate – Museum – Indira Dock" },
       { number: "225-A", name: "Brabourne Stadium, Colaba Market – Gateway of India" },
@@ -37,6 +38,7 @@ const WARD_DATA = [
     id: "B",
     name: "Ward B (Dongri/Masjid)",
     coords: [18.9568, 72.8365] as [number, number],
+    budgetUrl: "https://www.mcgm.gov.in/irj/go/km/docs/documents/MCGM%20Department%20List/Chief%20Accountant%20(Finance)/Budget/Budget%20Estimate%202025-2026/9-%20Ward%20Wise%20Book%202025-26/4020%20B.pdf",
     subWards: [
       { number: "221-B", name: "Imamwada – Dongri" },
       { number: "222-B", name: "Bengalipura – Princess Dock" },
@@ -47,6 +49,7 @@ const WARD_DATA = [
     id: "C",
     name: "Ward C (Bhuleshwar)",
     coords: [18.9525, 72.8258] as [number, number],
+    budgetUrl: "https://www.mcgm.gov.in/irj/go/km/docs/documents/MCGM%20Department%20List/Chief%20Accountant%20(Finance)/Budget/Budget%20Estimate%202025-2026/9-%20Ward%20Wise%20Book%202025-26/4030%20C.pdf",
     subWards: [
       { number: "217-C", name: "Durgadevi Udyan – Madhav Baug – Bhuleshwar" },
       { number: "218-C", name: "Chandanwadi, Chirabazar, Gymkhana Vibhag" },
@@ -58,6 +61,7 @@ const WARD_DATA = [
     id: "D",
     name: "Ward D (Grant Road)",
     coords: [18.9633, 72.8122] as [number, number],
+    budgetUrl: "https://www.mcgm.gov.in/irj/go/km/docs/documents/MCGM%20Department%20List/Chief%20Accountant%20(Finance)/Budget/Budget%20Estimate%202025-2026/9-%20Ward%20Wise%20Book%202025-26/4040%20D.pdf",
     subWards: [
       { number: "210-D", name: "Bellasis chawls – Navjeevan Society" },
       { number: "211-D", name: "Wellington Sports Club – Bhatia Hospital" },
@@ -72,6 +76,7 @@ const WARD_DATA = [
     id: "E",
     name: "Ward E (Byculla)",
     coords: [18.9750, 72.8333] as [number, number],
+    budgetUrl: "https://www.mcgm.gov.in/irj/go/km/docs/documents/MCGM%20Department%20List/Chief%20Accountant%20(Finance)/Budget/Budget%20Estimate%202025-2026/9-%20Ward%20Wise%20Book%202025-26/4050%20E.pdf",
     subWards: [
       { number: "202-E", name: "Veer Jijamata Udyan – Ghodapdeo – Mazgaon Dock (North)" },
       { number: "203-E", name: "Kasturba Hospital – India United Mills" },
@@ -87,6 +92,7 @@ const WARD_DATA = [
     id: "F/N",
     name: "Ward F/North (Matunga)",
     coords: [19.0300, 72.8600] as [number, number],
+    budgetUrl: "https://www.mcgm.gov.in/irj/go/km/docs/documents/MCGM%20Department%20List/Chief%20Accountant%20(Finance)/Budget/Budget%20Estimate%202025-2026/9-%20Ward%20Wise%20Book%202025-26/4070%20FN.pdf",
     subWards: [
       { number: "165-F/N", name: "Pratiksha Nagar, Sion" },
       { number: "166-F/N", name: "Salt Pans, Sion Transit Camp" },
@@ -104,6 +110,7 @@ const WARD_DATA = [
     id: "F/S",
     name: "Ward F/South (Parel)",
     coords: [19.0000, 72.8400] as [number, number],
+    budgetUrl: "https://www.mcgm.gov.in/irj/go/km/docs/documents/MCGM%20Department%20List/Chief%20Accountant%20(Finance)/Budget/Budget%20Estimate%202025-2026/9-%20Ward%20Wise%20Book%202025-26/4060%20FS.pdf",
     subWards: [
       { number: "195-F/S", name: "Ranjeet Studio – Naigaon B.D.D. Chawls" },
       { number: "196-F/S", name: "Naigaum Police Ground – B.P.T. Hospital" },
@@ -118,6 +125,7 @@ const WARD_DATA = [
     id: "G/N",
     name: "Ward G/North (Dadar)",
     coords: [19.0200, 72.8400] as [number, number],
+    budgetUrl: "https://www.mcgm.gov.in/irj/go/km/docs/documents/MCGM%20Department%20List/Chief%20Accountant%20(Finance)/Budget/Budget%20Estimate%202025-2026/9-%20Ward%20Wise%20Book%202025-26/4090%20GN.pdf",
     subWards: [
       { number: "175-G/N", name: "Mahim Kala Killa" },
       { number: "176-G/N", name: "Dharavi Transit Camp" },
@@ -136,6 +144,7 @@ const WARD_DATA = [
     id: "G/S",
     name: "Ward G/South (Worli)",
     coords: [19.0050, 72.8150] as [number, number],
+    budgetUrl: "https://www.mcgm.gov.in/irj/go/km/docs/documents/MCGM%20Department%20List/Chief%20Accountant%20(Finance)/Budget/Budget%20Estimate%202025-2026/9-%20Ward%20Wise%20Book%202025-26/4080%20GS.pdf",
     subWards: [
       { number: "186-G/S", name: "Parel S.T. Depot – Western Railway Workshop" },
       { number: "187-G/S", name: "T.V.Centre – Prabhadevi" },
@@ -153,6 +162,7 @@ const WARD_DATA = [
     id: "H/E",
     name: "Ward H/East (Bandra East)",
     coords: [19.0600, 72.8500] as [number, number],
+    budgetUrl: "https://www.mcgm.gov.in/irj/go/km/docs/documents/MCGM%20Department%20List/Chief%20Accountant%20(Finance)/Budget/Budget%20Estimate%202025-2026/9-%20Ward%20Wise%20Book%202025-26/4100%20HE.pdf",
     subWards: [
       { number: "81-H/E", name: "Prabhat Colony – Anand Nagar" },
       { number: "82-H/E", name: "Vivekanand Nagar" },
@@ -171,6 +181,7 @@ const WARD_DATA = [
     id: "H/W",
     name: "Ward H/West (Bandra West)",
     coords: [19.0600, 72.8300] as [number, number],
+    budgetUrl: "https://www.mcgm.gov.in/irj/go/km/docs/documents/MCGM%20Department%20List/Chief%20Accountant%20(Finance)/Budget/Budget%20Estimate%202025-2026/9-%20Ward%20Wise%20Book%202025-26/4110%20HW.pdf",
     subWards: [
       { number: "92-H/W", name: "Khira Nagar -Muktanand Park" },
       { number: "93-H/W", name: "Vitthaldas Nagar – Madhu Park (Khar West) Saraswat Colony" },
@@ -184,6 +195,7 @@ const WARD_DATA = [
     id: "K/E",
     name: "Ward K/East (Andheri East)",
     coords: [19.1136, 72.8697] as [number, number],
+    budgetUrl: "https://www.mcgm.gov.in/irj/go/km/docs/documents/MCGM%20Department%20List/Chief%20Accountant%20(Finance)/Budget/Budget%20Estimate%202025-2026/9-%20Ward%20Wise%20Book%202025-26/4120%20KE.pdf",
     subWards: [
       { number: "66-K/E", name: "Bandrekar Wadi – Ismail College – Natwar Nagar" },
       { number: "67-K/E", name: "Jogeshwari Caves – Majaswadi" },
@@ -206,6 +218,7 @@ const WARD_DATA = [
     id: "K/W",
     name: "Ward K/West (Andheri West)",
     coords: [19.1363, 72.8277] as [number, number],
+    budgetUrl: "https://www.mcgm.gov.in/irj/go/km/docs/documents/MCGM%20Department%20List/Chief%20Accountant%20(Finance)/Budget/Budget%20Estimate%202025-2026/9-%20Ward%20Wise%20Book%202025-26/4130%20KW.pdf",
     subWards: [
       { number: "53-K/W", name: "Oshiwara – Bandivli (East)" },
       { number: "54-K/W", name: "Tarapore Garden – Adarsh Nagar" },
@@ -226,6 +239,7 @@ const WARD_DATA = [
     id: "P/N",
     name: "Ward P/North (Malad West)",
     coords: [19.1828, 72.8402] as [number, number],
+    budgetUrl: "https://www.mcgm.gov.in/irj/go/km/docs/documents/MCGM%20Department%20List/Chief%20Accountant%20(Finance)/Budget/Budget%20Estimate%202025-2026/9-%20Ward%20Wise%20Book%202025-26/4150%20PN.pdf",
     subWards: [
       { number: "29-P/N", name: "Manori – Marve Erangel – Aksa – Daravali Village – Madh Island" },
       { number: "30-P/N", name: "Valnai Village – Kharodi Village Malavani Colony" },
@@ -249,6 +263,7 @@ const WARD_DATA = [
     id: "P/S",
     name: "Ward P/South (Goregaon)",
     coords: [19.1663, 72.8526] as [number, number],
+    budgetUrl: "https://www.mcgm.gov.in/irj/go/km/docs/documents/MCGM%20Department%20List/Chief%20Accountant%20(Finance)/Budget/Budget%20Estimate%202025-2026/9-%20Ward%20Wise%20Book%202025-26/4140%20PS.pdf",
     subWards: [
       { number: "45-P/S", name: "Sunder Nagar – Piramal Nagar" },
       { number: "46-P/S", name: "Dindoshi – Pandurangwadi" },
@@ -264,6 +279,7 @@ const WARD_DATA = [
     id: "R/C",
     name: "Ward R/Central (Borivali)",
     coords: [19.2381, 72.8523] as [number, number],
+    budgetUrl: "https://www.mcgm.gov.in/irj/go/km/docs/documents/MCGM%20Department%20List/Chief%20Accountant%20(Finance)/Budget/Budget%20Estimate%202025-2026/9-%20Ward%20Wise%20Book%202025-26/4180%20RC.pdf",
     subWards: [
       { number: "10-R/C", name: "Daulat Nagar, Nancy Colony" },
       { number: "11-R/C", name: "Bansi Nagar – Tata power House" },
@@ -281,6 +297,7 @@ const WARD_DATA = [
     id: "R/N",
     name: "Ward R/North (Dahisar)",
     coords: [19.2575, 72.8591] as [number, number],
+    budgetUrl: "https://www.mcgm.gov.in/irj/go/km/docs/documents/MCGM%20Department%20List/Chief%20Accountant%20(Finance)/Budget/Budget%20Estimate%202025-2026/9-%20Ward%20Wise%20Book%202025-26/4170%20RN.pdf",
     subWards: [
       { number: "1-R/N", name: "Kandarpada – I. C. Colony" },
       { number: "2-R/N", name: "Gaondevi – Dahisar (E)" },
@@ -295,6 +312,7 @@ const WARD_DATA = [
     id: "R/S",
     name: "Ward R/South (Kandivali)",
     coords: [19.2045, 72.8376] as [number, number],
+    budgetUrl: "https://www.mcgm.gov.in/irj/go/km/docs/documents/MCGM%20Department%20List/Chief%20Accountant%20(Finance)/Budget/Budget%20Estimate%202025-2026/9-%20Ward%20Wise%20Book%202025-26/4160%20RS.pdf",
     subWards: [
       { number: "18-R/S", name: "Charkop (South) – Kandivali (West)" },
       { number: "19-R/S", name: "Charkop Industrial Estate" },
@@ -314,6 +332,7 @@ const WARD_DATA = [
     id: "L",
     name: "Ward L (Kurla)",
     coords: [19.0726, 72.8805] as [number, number],
+    budgetUrl: "https://www.mcgm.gov.in/irj/go/km/docs/documents/MCGM%20Department%20List/Chief%20Accountant%20(Finance)/Budget/Budget%20Estimate%202025-2026/9-%20Ward%20Wise%20Book%202025-26/4190%20L.pdf",
     subWards: [
       { number: "150-L", name: "Tungwa Village – Chandivali Village (West)" },
       { number: "151-L", name: "Chandivali Village (East)" },
@@ -336,6 +355,7 @@ const WARD_DATA = [
     id: "M/E",
     name: "Ward M/East (Mankhurd)",
     coords: [19.0565, 72.9174] as [number, number],
+    budgetUrl: "https://www.mcgm.gov.in/irj/go/km/docs/documents/MCGM%20Department%20List/Chief%20Accountant%20(Finance)/Budget/Budget%20Estimate%202025-2026/9-%20Ward%20Wise%20Book%202025-26/4200%20ME.pdf",
     subWards: [
       { number: "129-M/E", name: "Lotus Colony – Rafique Nagar" },
       { number: "130-M/E", name: "Shivaji Nagar No.1" },
@@ -356,6 +376,7 @@ const WARD_DATA = [
     id: "M/W",
     name: "Ward M/West (Chembur)",
     coords: [19.0522, 72.9005] as [number, number],
+    budgetUrl: "https://www.mcgm.gov.in/irj/go/km/docs/documents/MCGM%20Department%20List/Chief%20Accountant%20(Finance)/Budget/Budget%20Estimate%202025-2026/9-%20Ward%20Wise%20Book%202025-26/4210%20MW.pdf",
     subWards: [
       { number: "142-M/W", name: "Anik, Mahul Villages – R.C. F. Company" },
       { number: "143-M/W", name: "Suman Nagar – Sindhi Society" },
@@ -371,6 +392,7 @@ const WARD_DATA = [
     id: "N",
     name: "Ward N (Ghatkopar)",
     coords: [19.0860, 72.9090] as [number, number],
+    budgetUrl: "https://www.mcgm.gov.in/irj/go/km/docs/documents/MCGM%20Department%20List/Chief%20Accountant%20(Finance)/Budget/Budget%20Estimate%202025-2026/9-%20Ward%20Wise%20Book%202025-26/4220%20N.pdf",
     subWards: [
       { number: "117-N", name: "Rahul Nagar" },
       { number: "118-N", name: "Parksite Colony – Vikroli Village" },
@@ -390,6 +412,7 @@ const WARD_DATA = [
     id: "S",
     name: "Ward S (Bhandup)",
     coords: [19.1511, 72.9372] as [number, number],
+    budgetUrl: "https://www.mcgm.gov.in/irj/go/km/docs/documents/MCGM%20Department%20List/Chief%20Accountant%20(Finance)/Budget/Budget%20Estimate%202025-2026/9-%20Ward%20Wise%20Book%202025-26/4230%20S.pdf",
     subWards: [
       { number: "104-S", name: "Milind Nagar – Gaondevi Hills" },
       { number: "105-S", name: "Bhandup Village" },
@@ -410,6 +433,7 @@ const WARD_DATA = [
     id: "T",
     name: "Ward T (Mulund)",
     coords: [19.1726, 72.9565] as [number, number],
+    budgetUrl: "https://www.mcgm.gov.in/irj/go/km/docs/documents/MCGM%20Department%20List/Chief%20Accountant%20(Finance)/Budget/Budget%20Estimate%202025-2026/9-%20Ward%20Wise%20Book%202025-26/4240%20T.pdf",
     subWards: [
       { number: "100-T", name: "Topiwala College – Gavan Pada – Mhada Colony" },
       { number: "101-T", name: "Nane Pada – Palm Acers" },
@@ -466,15 +490,23 @@ export default function WardMap() {
                   </div>
                 </div>
 
+
                 <div className="space-y-2 pt-4 border-t">
-                  <label className="text-xs uppercase tracking-wider text-muted-foreground font-bold">Data Heatmap</label>
-                  <div className="flex flex-col gap-2">
-                    <button className="flex items-center gap-2 px-3 py-2 rounded-md bg-muted text-muted-foreground text-sm font-medium hover:bg-muted/80">
-                      Fund Utilization
-                    </button>
-                    <button className="flex items-center gap-2 px-3 py-2 rounded-md bg-muted text-muted-foreground text-sm font-medium hover:bg-muted/80">
-                      Population Density
-                    </button>
+                  <label className="text-xs uppercase tracking-wider text-muted-foreground font-bold">Ward Budgets (2025-26)</label>
+                  <p className="text-[10px] text-muted-foreground mb-2">Access official ward-wise budget books</p>
+                  <div className="grid grid-cols-4 gap-2">
+                    {WARD_DATA.map((ward) => (
+                      <a
+                        key={ward.id}
+                        href={ward.budgetUrl || "https://www.mcgm.gov.in/irj/portal/anonymous/qlBEst2526"}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center justify-center px-1 py-1.5 rounded-md bg-primary/10 hover:bg-primary hover:text-primary-foreground text-[10px] font-bold transition-colors border border-primary/20"
+                        title={`View 2025-26 Budget for ${ward.name}`}
+                      >
+                        {ward.id}
+                      </a>
+                    ))}
                   </div>
                 </div>
               </CardContent>
@@ -544,13 +576,13 @@ export default function WardMap() {
             <div className="grid md:grid-cols-2 gap-6">
               <Card>
                 <CardHeader>
-                  <CardTitle className="text-lg font-serif">Ward Analysis: G/South</CardTitle>
+                  <CardTitle className="text-lg font-serif">BMC Total Budget 2025-26</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="flex justify-between items-end">
                     <div>
-                      <div className="text-2xl font-bold">₹82.4 Cr</div>
-                      <div className="text-xs text-muted-foreground">Total Ward Budget</div>
+                      <div className="text-2xl font-bold">₹59,791.33 Cr</div>
+                      <div className="text-xs text-muted-foreground">Total Budget</div>
                     </div>
                     <Badge className="bg-green-100 text-green-700 hover:bg-green-100">Optimal Utilization</Badge>
                   </div>
