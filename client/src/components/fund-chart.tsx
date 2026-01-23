@@ -4,7 +4,7 @@ import { Candidate } from "@/lib/mock-data";
 export function FundUtilizationChart({ funds }: { funds: Candidate['funds'] }) {
   const utilizationData = [
     { name: "Utilized", value: funds.utilized, color: "hsl(var(--chart-1))" },
-    { name: "Remaining", value: funds.allocated - funds.utilized, color: "hsl(var(--muted))" },
+    { name: "Remaining", value: funds.allocated - funds.utilized, color: "hsl(var(--chart-2))" },
   ];
 
   const projectData = funds.projects.map((p, i) => ({
@@ -37,11 +37,11 @@ export function FundUtilizationChart({ funds }: { funds: Candidate['funds'] }) {
                   <Cell key={`cell-${index}`} fill={entry.color} strokeWidth={0} />
                 ))}
               </Pie>
-              <Tooltip 
+              <Tooltip
                 formatter={(value: number) => formatCurrency(value)}
                 contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}
               />
-              <Legend verticalAlign="bottom" height={36}/>
+              <Legend verticalAlign="bottom" height={36} />
             </PieChart>
           </ResponsiveContainer>
         </div>
@@ -58,14 +58,14 @@ export function FundUtilizationChart({ funds }: { funds: Candidate['funds'] }) {
             <BarChart data={projectData} layout="vertical" margin={{ left: 0 }}>
               <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="hsl(var(--border))" />
               <XAxis type="number" hide />
-              <YAxis 
-                type="category" 
-                dataKey="name" 
-                width={100} 
+              <YAxis
+                type="category"
+                dataKey="name"
+                width={100}
                 tick={{ fontSize: 11 }}
                 interval={0}
               />
-              <Tooltip 
+              <Tooltip
                 formatter={(value: number) => `₹${(value / 100000).toFixed(1)}L`}
                 cursor={{ fill: 'hsl(var(--muted)/0.2)' }}
                 contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}
