@@ -1,5 +1,5 @@
 import { type User, type InsertUser } from "@shared/schema"; // Keep this for user auth if needed, but we focus on Candidates
-import { CandidateModel, UserModel, FeedbackModel } from "./models";
+import { CandidateModel, UserModel, FeedbackModel, IssueModel } from "./models";
 
 // Use the same interface style if there was one, or adapt
 // Looking at original storage.ts, it had IStorage for User.
@@ -35,6 +35,12 @@ export interface IStorage {
   // Feedback methods
   createFeedback(feedback: any): Promise<any>;
   getFeedbacksForCandidate(candidateId: string): Promise<any[]>;
+
+  // Issue methods
+  createIssue(issue: any): Promise<any>;
+  getIssues(): Promise<any[]>;
+  verifyIssue(id: string): Promise<any>;
+  deleteIssue(id: string): Promise<void>;
 }
 
 export class MongoStorage implements IStorage {
@@ -94,6 +100,24 @@ export class MongoStorage implements IStorage {
   async getFeedbacksForCandidate(candidateId: string) {
     return await FeedbackModel.find({ candidateId }).sort({ createdAt: -1 });
   }
+
+  async createIssue(issue: any) {
+    const newIssue = new IssueModel(issue);
+    return await newIssue.save();
+  }
+
+  async getIssues() {
+    return await IssueModel.find({}).sort({ createdAt: -1 }).populate('userId', 'username');
+  }
+
+  async verifyIssue(id: string) {
+    return await IssueModel.findByIdAndUpdate(id, { isVerified: true }, { new: true });
+  }
+
+  async deleteIssue(id: string) {
+    await IssueModel.findByIdAndDelete(id);
+  }
+
 }
 
 export const storage = new MongoStorage();

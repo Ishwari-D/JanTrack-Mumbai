@@ -1,6 +1,7 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
+import { upload, uploadToCloudinary } from "./lib/cloudinary";
 
 export async function registerRoutes(
   httpServer: Server,
@@ -90,6 +91,70 @@ export async function registerRoutes(
       res.json(feedbacks);
     } catch (error) {
       res.status(500).json({ message: "Failed to fetch feedbacks" });
+    }
+  });
+
+  // Issue routes
+  app.post("/api/issues", upload.single('image'), async (req, res) => {
+    if (!req.isAuthenticated()) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+
+    try {
+      const { title, description, location } = req.body;
+      if (!req.file) {
+        return res.status(400).json({ message: "Image is required" });
+      }
+
+      const imageUrl = await uploadToCloudinary(req.file);
+
+      const issue = await storage.createIssue({
+        title,
+        description,
+        location,
+        imageUrl,
+        userId: (req.user as any).id,
+        status: 'open'
+      });
+      res.status(201).json(issue);
+    } catch (error: any) {
+      console.error("Error creating issue:", error);
+      res.status(500).json({ message: "Failed to create issue" });
+    }
+  });
+
+  app.get("/api/issues", async (req, res) => {
+    try {
+      const issues = await storage.getIssues();
+      res.json(issues);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch issues" });
+    }
+  });
+
+  app.patch("/api/issues/:id/verify", async (req, res) => {
+    if (!req.isAuthenticated()) { // Ideally should check for admin role, but basic auth for now
+      // In a real app, check req.user.role === 'admin'
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+    try {
+      const issue = await storage.verifyIssue(req.params.id);
+      if (!issue) return res.status(404).json({ message: "Issue not found" });
+      res.json(issue);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to verify issue" });
+    }
+  });
+
+  app.delete("/api/issues/:id", async (req, res) => {
+    if (!req.isAuthenticated()) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+    try {
+      await storage.deleteIssue(req.params.id);
+      res.status(204).send();
+    } catch (error) {
+      res.status(500).json({ message: "Failed to delete issue" });
     }
   });
 

@@ -24,7 +24,7 @@ import { useState } from "react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Textarea } from "@/components/ui/textarea";
 import { useQuery, useMutation } from "@tanstack/react-query";
-import { Candidate } from "@/lib/mock-data";
+import { Candidate } from "@shared/schema";
 import { queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 
@@ -44,7 +44,7 @@ export default function CandidateProfile() {
     retry: false
   });
 
-  const { data: feedbacks } = useQuery({
+  const { data: feedbacks } = useQuery<any[]>({
     queryKey: [`/api/candidates/${params?.id}/feedback`],
     enabled: !!params?.id
   });
