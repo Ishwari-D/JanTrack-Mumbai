@@ -106,3 +106,4 @@ import { connectDB } from "./db";
     },
   );
 })();
+// added a unnessary comment
