@@ -3,10 +3,10 @@ import { CandidateCard } from "@/components/candidate-card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Search, MapPin, TrendingUp, Users } from "lucide-react";
-import { Link } from "wouter";
+import { Link, useLocation } from "wouter";
 import { useQuery } from "@tanstack/react-query";
 import { motion, useSpring, useTransform, useInView, useScroll } from "framer-motion";
-import { useEffect, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 
 // Reuse Candidate Interface
 interface Candidate {
@@ -104,6 +104,21 @@ export default function Home() {
   const { scrollY } = useScroll();
   const yBackend = useTransform(scrollY, [0, 500], [0, 200]);
 
+  const [searchTerm, setSearchTerm] = useState("");
+  const [, setLocation] = useLocation();
+
+  const handleSearch = () => {
+    if (searchTerm.trim()) {
+      setLocation(`/candidates?q=${encodeURIComponent(searchTerm)}`);
+    }
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter") {
+      handleSearch();
+    }
+  };
+
   return (
     <Layout>
       {/* Hero Section */}
@@ -158,11 +173,15 @@ export default function Home() {
                 <Input
                   placeholder="Search by candidate or constituency..."
                   className="pl-10 h-12 bg-white/90 border-transparent text-foreground placeholder:text-muted-foreground focus:bg-white text-lg shadow-lg"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  onKeyDown={handleKeyDown}
                 />
               </div>
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
+                onClick={handleSearch}
                 className="h-12 px-8 bg-secondary text-primary hover:bg-white hover:text-primary font-bold shadow-lg shadow-secondary/20 rounded-md inline-flex items-center justify-center text-sm ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
               >
                 Search
