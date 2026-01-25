@@ -598,10 +598,10 @@ export default function WardMap() {
 
                 {WARD_DATA.map((ward) => (
                   <Marker key={ward.id} position={ward.coords}>
-                    <Tooltip direction="top" offset={[0, -20]} opacity={1} className="min-w-[350px] max-w-[400px]">
+                    <Popup className="min-w-[300px] max-w-[350px]">
                       <div className="p-2 space-y-2">
                         <h3 className="font-bold text-base border-b pb-1 text-primary">{ward.name}</h3>
-                        <div className="max-h-[300px] overflow-y-auto pr-1 custom-scrollbar">
+                        <div className="max-h-[200px] overflow-y-auto pr-1 custom-scrollbar">
                           <div className="text-xs font-semibold text-muted-foreground mb-2 uppercase tracking-wide">Electoral Wards & Areas</div>
                           <ul className="space-y-2">
                             {ward.subWards.map((sub, idx) => (
@@ -613,7 +613,7 @@ export default function WardMap() {
                           </ul>
                         </div>
                       </div>
-                    </Tooltip>
+                    </Popup>
                   </Marker>
                 ))}
               </MapContainer>
