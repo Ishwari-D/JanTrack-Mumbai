@@ -507,7 +507,7 @@ export default function AdminPage() {
                                                     </div>
                                                     <div className="space-y-4">
                                                         {formData.promises.map((promise, index) => (
-                                                            <div key={index} className="border p-4 rounded-lg bg-slate-50 relative">
+                                                            <div key={index} className="border p-4 rounded-lg bg-slate-50 dark:bg-slate-900 relative">
                                                                 <Button
                                                                     type="button"
                                                                     variant="ghost"

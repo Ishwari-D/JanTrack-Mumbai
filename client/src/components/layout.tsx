@@ -23,6 +23,16 @@ export function Layout({ children }: { children: React.ReactNode }) {
   const { effectiveTheme } = useTheme();
   const { data: user } = useQuery<User>({ queryKey: ["/api/user"], retry: false });
   const { toast } = useToast();
+  const [email, setEmail] = useState("");
+
+  const handleSubscribe = () => {
+    if (!email || !email.includes("@")) {
+      toast({ title: "Invalid Email", description: "Please enter a valid email address.", variant: "destructive" });
+      return;
+    }
+    toast({ title: "Subscribed!", description: "You have successfully subscribed to our newsletter." });
+    setEmail("");
+  };
 
   const logoutMutation = useMutation({
     mutationFn: async () => {
@@ -186,10 +196,26 @@ export function Layout({ children }: { children: React.ReactNode }) {
           <div>
             <h4 className="font-serif font-bold text-lg mb-6 text-white dark:text-slate-900">Platform</h4>
             <ul className="space-y-4 text-sm text-primary-foreground/70 dark:text-slate-600">
-              <li><a href="#" className="hover:text-white dark:hover:text-primary transition-colors">Candidate Search</a></li>
-              <li><a href="#" className="hover:text-white dark:hover:text-primary transition-colors">Manifesto Tracker</a></li>
-              <li><a href="#" className="hover:text-white dark:hover:text-primary transition-colors">Fund Utilization</a></li>
-              <li><a href="#" className="hover:text-white dark:hover:text-primary transition-colors">Report Issue</a></li>
+              <li>
+                <Link href="/candidates">
+                  <a className="hover:text-white dark:hover:text-primary transition-colors">Candidate Search</a>
+                </Link>
+              </li>
+              <li>
+                <Link href="/candidates">
+                  <a className="hover:text-white dark:hover:text-primary transition-colors">Manifesto Tracker</a>
+                </Link>
+              </li>
+              <li>
+                <Link href="/dashboard">
+                  <a className="hover:text-white dark:hover:text-primary transition-colors">Fund Utilization</a>
+                </Link>
+              </li>
+              <li>
+                <Link href="/report-issue">
+                  <a className="hover:text-white dark:hover:text-primary transition-colors">Report Issue</a>
+                </Link>
+              </li>
             </ul>
           </div>
 
@@ -213,8 +239,10 @@ export function Layout({ children }: { children: React.ReactNode }) {
                 type="email"
                 placeholder="Enter your email"
                 className="bg-white/10 dark:bg-slate-100 border border-white/20 dark:border-slate-200 rounded-md px-4 py-2 text-sm text-white dark:text-slate-900 placeholder:text-white/50 dark:placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-secondary/50"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
               />
-              <Button className="w-full bg-secondary text-primary hover:bg-white dark:hover:bg-primary dark:hover:text-white font-bold">
+              <Button onClick={handleSubscribe} className="w-full bg-amber-400 text-slate-900 font-bold hover:bg-white hover:text-primary dark:hover:bg-primary dark:hover:text-white">
                 Subscribe
               </Button>
             </div>
