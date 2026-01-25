@@ -1,5 +1,5 @@
 import { type User, type InsertUser } from "@shared/schema"; // Keep this for user auth if needed, but we focus on Candidates
-import { CandidateModel, UserModel, FeedbackModel, IssueModel } from "./models";
+import { CandidateModel, UserModel, FeedbackModel, IssueModel, ReportModel } from "./models";
 
 // Use the same interface style if there was one, or adapt
 // Looking at original storage.ts, it had IStorage for User.
@@ -23,6 +23,7 @@ export interface IStorage {
   // User methods
   getUser(id: string): Promise<User | undefined>;
   getUserByUsername(username: string): Promise<User | undefined>;
+  getUserByEmail(email: string): Promise<User | undefined>;
   createUser(user: InsertUser): Promise<User>;
 
   // Candidate methods
@@ -41,6 +42,16 @@ export interface IStorage {
   getIssues(): Promise<any[]>;
   verifyIssue(id: string): Promise<any>;
   deleteIssue(id: string): Promise<void>;
+  deleteIssue(id: string): Promise<void>;
+
+  // Report methods
+  createReport(report: any): Promise<any>;
+  getReports(): Promise<any[]>;
+  updateReportStatus(id: string, status: string): Promise<any>;
+
+  // OTP methods
+  saveOtp(username: string, otp: string): Promise<void>;
+  verifyOtp(username: string, otp: string): Promise<boolean>;
 }
 
 export class MongoStorage implements IStorage {
@@ -53,6 +64,28 @@ export class MongoStorage implements IStorage {
       checkPeriod: 86400000,
     });
   }
+
+  // Simple in-memory OTP storage: Map<username, { otp: string, expires: number }>
+  private otps = new Map<string, { otp: string, expires: number }>();
+
+  async saveOtp(username: string, otp: string): Promise<void> {
+    const expires = Date.now() + 5 * 60 * 1000; // 5 minutes
+    this.otps.set(username, { otp, expires });
+  }
+
+  async verifyOtp(username: string, otp: string): Promise<boolean> {
+    const record = this.otps.get(username);
+    if (!record) return false;
+    if (Date.now() > record.expires) {
+      this.otps.delete(username);
+      return false;
+    }
+    if (record.otp === otp) {
+      this.otps.delete(username); // One-time use
+      return true;
+    }
+    return false;
+  }
   async getUser(id: string): Promise<User | undefined> {
     const user = await UserModel.findById(id);
     if (!user) return undefined;
@@ -62,13 +95,19 @@ export class MongoStorage implements IStorage {
   async getUserByUsername(username: string): Promise<User | undefined> {
     const user = await UserModel.findOne({ username });
     if (!user) return undefined;
-    return { id: user._id.toString(), username: user.username, password: user.password, role: user.role };
+    return { id: user._id.toString(), username: user.username, password: user.password, role: user.role, email: user.email };
+  }
+
+  async getUserByEmail(email: string): Promise<User | undefined> {
+    const user = await UserModel.findOne({ email });
+    if (!user) return undefined;
+    return { id: user._id.toString(), username: user.username, password: user.password, role: user.role, email: user.email };
   }
 
   async createUser(insertUser: InsertUser): Promise<User> {
     const user = new UserModel(insertUser);
     await user.save();
-    return { id: user._id.toString(), username: user.username, password: user.password, role: user.role };
+    return { id: user._id.toString(), username: user.username, password: user.password, role: user.role, email: user.email };
   }
 
   async getCandidates() {
@@ -116,6 +155,19 @@ export class MongoStorage implements IStorage {
 
   async deleteIssue(id: string) {
     await IssueModel.findByIdAndDelete(id);
+  }
+
+  async createReport(reportData: any) {
+    const report = new ReportModel(reportData);
+    return await report.save();
+  }
+
+  async getReports() {
+    return await ReportModel.find({}).sort({ createdAt: -1 });
+  }
+
+  async updateReportStatus(id: string, status: string) {
+    return await ReportModel.findByIdAndUpdate(id, { status }, { new: true });
   }
 
 }

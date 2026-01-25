@@ -16,9 +16,23 @@ import {
   Gavel,
   Calendar,
   Share2,
-  Flag,
-  Loader2
+  Loader2,
+  AlertTriangle,
+  User,
+  Flag
 } from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+  DialogFooter
+} from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Input } from "@/components/ui/input";
 
 import { useState } from "react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -33,6 +47,9 @@ export default function CandidateProfile() {
   const { toast } = useToast();
   const [newComment, setNewComment] = useState("");
   const [rating, setRating] = useState(5);
+  const [reportReason, setReportReason] = useState("");
+  const [reportDescription, setReportDescription] = useState("");
+  const [isReportDialogOpen, setIsReportDialogOpen] = useState(false);
 
   const { data: candidate, isLoading, error } = useQuery<Candidate>({
     queryKey: [`/api/candidates/${params?.id}`],
@@ -69,6 +86,41 @@ export default function CandidateProfile() {
     },
     onError: () => {
       toast({ title: "Failed to post feedback", variant: "destructive" });
+    }
+  });
+
+  const reportMutation = useMutation({
+    mutationFn: async () => {
+      const res = await fetch("/api/reports", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          candidateId: candidate?.id,
+          candidateName: candidate?.name,
+          reason: reportReason,
+          description: reportDescription
+        })
+      });
+      if (!res.ok) {
+        if (res.status === 401) {
+          throw new Error("You must be logged in to report a candidate.");
+        }
+        throw new Error("Failed to submit report");
+      }
+      return res.json();
+    },
+    onSuccess: () => {
+      setIsReportDialogOpen(false);
+      setReportReason("");
+      setReportDescription("");
+      toast({ title: "Report submitted successfully", description: "Admins will review your report." });
+    },
+    onError: (error) => {
+      toast({
+        title: "Submission Failed",
+        description: error.message,
+        variant: "destructive"
+      });
     }
   });
 
@@ -126,18 +178,94 @@ export default function CandidateProfile() {
                     <Badge variant="secondary" className="bg-secondary/20 text-secondary-foreground hover:bg-secondary/30">
                       <MapPin size={12} className="mr-1" /> {candidate.constituency}
                     </Badge>
+                    <Badge variant="outline" className="border-muted bg-muted/20">
+                      Ward {candidate.ward}
+                    </Badge>
                   </div>
-                  <h1 className="text-4xl font-serif font-bold text-foreground">{candidate.name}</h1>
+                  <h1 className="text-4xl font-serif font-bold text-foreground">
+                    {candidate.name}
+                    {candidate.gender && <span className="text-2xl text-muted-foreground font-sans font-normal ml-2">({candidate.gender})</span>}
+                  </h1>
                   <p className="text-muted-foreground mt-2 max-w-2xl">{candidate.bio}</p>
                 </div>
 
                 <div className="flex gap-2">
-                  <Button variant="outline" size="sm" className="gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="gap-2"
+                    onClick={async () => {
+                      try {
+                        if (navigator.share) {
+                          await navigator.share({
+                            title: `Candidate Profile: ${candidate.name}`,
+                            text: `Check out the profile and report card of ${candidate.name} on JanTrack Mumbai!`,
+                            url: window.location.href,
+                          });
+                        } else {
+                          await navigator.clipboard.writeText(window.location.href);
+                          toast({ title: "Link Copied", description: "Profile link copied to clipboard." });
+                        }
+                      } catch (err) {
+                        console.error('Error sharing:', err);
+                        toast({ title: "Share failed", description: "Could not share or copy link.", variant: "destructive" });
+                      }
+                    }}
+                  >
                     <Share2 size={16} /> Share
                   </Button>
-                  <Button variant="destructive" size="sm" className="gap-2 bg-red-50 text-red-600 border-red-200 hover:bg-red-100 hover:border-red-300">
-                    <Flag size={16} /> Report
-                  </Button>
+
+                  <Dialog open={isReportDialogOpen} onOpenChange={setIsReportDialogOpen}>
+                    <DialogTrigger asChild>
+                      <Button variant="destructive" size="sm" className="gap-2 bg-red-50 text-red-600 border-red-200 hover:bg-red-100 hover:border-red-300">
+                        <Flag size={16} /> Report
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent>
+                      <DialogHeader>
+                        <DialogTitle>Report Candidate</DialogTitle>
+                        <DialogDescription>
+                          Select a reason for reporting this candidate. Your report will be reviewed by admins.
+                        </DialogDescription>
+                      </DialogHeader>
+                      <div className="grid gap-4 py-4">
+                        <div className="grid gap-2">
+                          <Label htmlFor="reason">Reason</Label>
+                          <Select onValueChange={setReportReason} value={reportReason}>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select a reason" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="False Information">False Information</SelectItem>
+                              <SelectItem value="Hate Speech">Hate Speech</SelectItem>
+                              <SelectItem value="Inappropriate Content">Inappropriate Content</SelectItem>
+                              <SelectItem value="Spam">Spam</SelectItem>
+                              <SelectItem value="Other">Other</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        <div className="grid gap-2">
+                          <Label htmlFor="description">Description (Optional)</Label>
+                          <Textarea
+                            id="description"
+                            placeholder="Provide more details..."
+                            value={reportDescription}
+                            onChange={(e) => setReportDescription(e.target.value)}
+                          />
+                        </div>
+                      </div>
+                      <DialogFooter>
+                        <Button variant="outline" onClick={() => setIsReportDialogOpen(false)}>Cancel</Button>
+                        <Button
+                          variant="destructive"
+                          onClick={() => reportMutation.mutate()}
+                          disabled={!reportReason || reportMutation.isPending}
+                        >
+                          {reportMutation.isPending ? "Submitting..." : "Submit Report"}
+                        </Button>
+                      </DialogFooter>
+                    </DialogContent>
+                  </Dialog>
                 </div>
               </div>
 
@@ -149,6 +277,7 @@ export default function CandidateProfile() {
                     <span className="truncate">{candidate.education}</span>
                   </div>
                 </div>
+
                 <div className="bg-muted/30 p-4 rounded-lg border border-border/50">
                   <div className="text-muted-foreground text-xs uppercase tracking-wider mb-1">Net Assets</div>
                   <div className="font-semibold flex items-center gap-2">

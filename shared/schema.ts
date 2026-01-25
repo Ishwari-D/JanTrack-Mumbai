@@ -6,12 +6,14 @@ import { z } from "zod";
 export const users = pgTable("users", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
   username: text("username").notNull().unique(),
+  email: text("email"), // Optional for now to avoid breaking existing users immediately, but usually unique
   password: text("password").notNull(),
   role: text("role").notNull().default('user'),
 });
 
 export const insertUserSchema = createInsertSchema(users).pick({
   username: true,
+  email: true,
   password: true,
   role: true,
 });
@@ -41,6 +43,8 @@ export interface Candidate {
   party: string;
   constituency: string;
   ward: string;
+  ward: string;
+  gender: string;
   age: number;
   education: string;
   image: string;
@@ -55,3 +59,10 @@ export interface Candidate {
   };
   bio: string;
 }
+
+// Zod schema for client-side validation of report creation
+export const insertReportSchema = z.object({
+  reason: z.string().min(1, "Reason is required"),
+  description: z.string().optional(),
+});
+

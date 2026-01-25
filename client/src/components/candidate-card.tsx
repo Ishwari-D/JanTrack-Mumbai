@@ -52,7 +52,12 @@ export function CandidateCard({ candidate }: { candidate: Candidate }) {
           />
         )}
         <div className="absolute top-4 right-4 z-10">
-          <Badge variant={candidate.criminalCases > 0 ? "destructive" : "secondary"} className="font-medium">
+          <Badge
+            variant={candidate.criminalCases > 0 ? "destructive" : "outline"}
+            className={candidate.criminalCases > 0
+              ? "font-medium"
+              : "font-medium bg-emerald-100 text-emerald-800 border-emerald-200 dark:bg-emerald-900/50 dark:text-emerald-100 dark:border-emerald-800"}
+          >
             {candidate.criminalCases > 0 ? (
               <span className="flex items-center gap-1">
                 <AlertCircle size={12} /> {candidate.criminalCases} Criminal Cases

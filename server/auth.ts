@@ -100,8 +100,29 @@ export function setupAuth(app: Express) {
         }
     });
 
-    app.post("/api/login", passport.authenticate("local"), (req, res) => {
-        res.status(200).json(req.user);
+    app.post("/api/login", (req, res, next) => {
+        // Wrap passport.authenticate to allow custom logic
+        passport.authenticate("local", async (err: any, user: User, info: any) => {
+            if (err) return next(err);
+            if (!user) return res.status(401).json(info);
+
+            // Admin OTP Check
+            if (user.role === 'admin') {
+                const { otp } = req.body;
+                if (!otp) {
+                    return res.status(403).send("OTP required for admin login");
+                }
+                const isValid = await storage.verifyOtp(user.username, otp);
+                if (!isValid) {
+                    return res.status(403).send("Invalid or expired OTP");
+                }
+            }
+
+            req.login(user, (err) => {
+                if (err) return next(err);
+                res.status(200).json(user);
+            });
+        })(req, res, next);
     });
 
     app.post("/api/logout", (req, res, next) => {

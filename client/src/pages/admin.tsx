@@ -51,6 +51,7 @@ interface Candidate {
     party: string;
     constituency: string;
     ward: string;
+    gender: string;
     age: number;
     education: string;
     image: string;
@@ -72,6 +73,7 @@ const defaultCandidate: Candidate = {
     party: "",
     constituency: "",
     ward: "",
+    gender: "",
     age: 0,
     education: "",
     image: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=200&auto=format&fit=crop",
@@ -272,6 +274,7 @@ export default function AdminPage() {
                             <TabsList>
                                 <TabsTrigger value="overview">Candidates</TabsTrigger>
                                 <TabsTrigger value="issues">Issues</TabsTrigger>
+                                <TabsTrigger value="reports">Reports</TabsTrigger>
                             </TabsList>
 
                             <Dialog open={isOpen} onOpenChange={(open) => {
@@ -366,6 +369,19 @@ export default function AdminPage() {
                                                                 value={formData.age}
                                                                 onChange={(e) => setFormData({ ...formData, age: Number(e.target.value) })}
                                                             />
+                                                        </div>
+                                                        <div className="space-y-2">
+                                                            <label className="text-sm font-medium">Gender</label>
+                                                            <select
+                                                                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                                                                value={formData.gender || ""}
+                                                                onChange={(e) => setFormData({ ...formData, gender: e.target.value })}
+                                                            >
+                                                                <option value="">Select Gender</option>
+                                                                <option value="Male">Male</option>
+                                                                <option value="Female">Female</option>
+                                                                <option value="Other">Other</option>
+                                                            </select>
                                                         </div>
                                                         <div className="space-y-2">
                                                             <label className="text-sm font-medium">Education</label>
@@ -640,6 +656,18 @@ export default function AdminPage() {
                             </div>
                         </div>
                     </TabsContent>
+
+                    <TabsContent value="reports">
+                        <div className="bg-card rounded-lg border shadow-sm">
+                            <div className="p-6 border-b">
+                                <h2 className="text-xl font-bold font-serif">Candidate Reports</h2>
+                                <p className="text-muted-foreground">Review reports submitted against candidates</p>
+                            </div>
+                            <div className="p-6">
+                                <ReportsList />
+                            </div>
+                        </div>
+                    </TabsContent>
                 </Tabs>
             </div>
         </Layout>
@@ -737,5 +765,89 @@ function IssueModerationList() {
                 </div>
             ))}
         </div>
+    );
+}
+
+function ReportsList() {
+    const { toast } = useToast();
+    const queryClient = useQueryClient();
+    const { data: reports } = useQuery<any[]>({
+        queryKey: ["/api/reports"],
+    });
+
+    const statusMutation = useMutation({
+        mutationFn: async ({ id, status }: { id: string, status: string }) => {
+            const res = await fetch(`/api/reports/${id}/status`, {
+                method: "PATCH",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ status })
+            });
+            if (!res.ok) throw new Error("Failed to update status");
+            return res.json();
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ["/api/reports"] });
+            toast({ title: "Status Updated", description: "Report status has been updated." });
+        },
+        onError: () => {
+            toast({ title: "Error", description: "Failed to update status", variant: "destructive" });
+        }
+    });
+
+    if (!reports?.length) return <div className="text-center py-12 text-muted-foreground">No candidate reports found</div>;
+
+    return (
+        <Table>
+            <TableHeader>
+                <TableRow>
+                    <TableHead>Reason</TableHead>
+                    <TableHead>Candidate</TableHead>
+                    <TableHead>Reporter</TableHead>
+                    <TableHead>Status</TableHead>
+                    <TableHead className="text-right">Actions</TableHead>
+                </TableRow>
+            </TableHeader>
+            <TableBody>
+                {reports.map((report: any) => (
+                    <TableRow key={report._id}>
+                        <TableCell>
+                            <div className="font-medium">{report.reason}</div>
+                            <div className="text-sm text-muted-foreground">{report.description}</div>
+                        </TableCell>
+                        <TableCell>{report.candidateName}</TableCell>
+                        <TableCell>{report.reporterName}</TableCell>
+                        <TableCell>
+                            <span className={`inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 border-transparent 
+                                ${report.status === 'resolved' ? 'bg-green-100 text-green-700' :
+                                    report.status === 'dismissed' ? 'bg-gray-100 text-gray-700' : 'bg-amber-100 text-amber-700'}`}>
+                                {report.status}
+                            </span>
+                        </TableCell>
+                        <TableCell className="text-right space-x-2">
+                            {report.status === 'pending' && (
+                                <>
+                                    <Button
+                                        size="sm"
+                                        variant="outline"
+                                        onClick={() => statusMutation.mutate({ id: report._id, status: 'dismissed' })}
+                                        disabled={statusMutation.isPending}
+                                    >
+                                        Dismiss
+                                    </Button>
+                                    <Button
+                                        size="sm"
+                                        className="bg-green-600 hover:bg-green-700 text-white"
+                                        onClick={() => statusMutation.mutate({ id: report._id, status: 'resolved' })}
+                                        disabled={statusMutation.isPending}
+                                    >
+                                        Resolve
+                                    </Button>
+                                </>
+                            )}
+                        </TableCell>
+                    </TableRow>
+                ))}
+            </TableBody>
+        </Table>
     );
 }

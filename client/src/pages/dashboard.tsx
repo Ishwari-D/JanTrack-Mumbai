@@ -4,6 +4,7 @@ import { Candidate } from "@shared/schema";
 import { Bar, BarChart, CartesianGrid, Legend, ResponsiveContainer, Tooltip, XAxis, YAxis, Cell } from "recharts";
 import { useLocation } from "wouter";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useMemo, useState, useEffect } from "react";
@@ -17,6 +18,7 @@ export default function Dashboard() {
   const [chartKey, setChartKey] = useState(() => Math.random().toString(36));
   const [location] = useLocation();
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
+  const [selectedWard, setSelectedWard] = useState<string | null>(null);
 
   useEffect(() => {
     // Reset key on mount or navigation to dashboard
@@ -58,13 +60,7 @@ export default function Dashboard() {
     })).sort((a, b) => a.name.localeCompare(b.name, undefined, { numeric: true }));
   }, [wardAggregation]);
 
-  // Data for the grid cards (individual candidates, but with Ward information)
-  const candidatesData = useMemo(() => candidates?.map(c => ({ // Re-applied useMemo
-    name: c.ward,
-    allocated: c.funds.allocated,
-    utilized: c.funds.utilized,
-    candidate: c.name
-  })) || [], [candidates]);
+
 
   const formatCurrency = (value: number) => `₹${(value / 10000000).toFixed(1)}Cr`;
 
@@ -118,7 +114,13 @@ export default function Dashboard() {
                   />
                   <Tooltip
                     formatter={(value: number) => formatCurrency(value)}
-                    contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}
+                    contentStyle={{
+                      borderRadius: '8px',
+                      border: 'none',
+                      boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+                      backgroundColor: 'hsl(var(--card))',
+                      color: 'hsl(var(--card-foreground))'
+                    }}
                     cursor={{ fill: 'hsl(var(--muted)/0.2)' }}
                     wrapperStyle={{ zIndex: 100 }}
                   />
@@ -126,6 +128,7 @@ export default function Dashboard() {
                   <Bar
                     dataKey="allocated"
                     name="Allocated Funds"
+                    fill="hsl(var(--primary))"
                     radius={[4, 4, 0, 0]}
                     animationDuration={1500}
                     animationEasing="ease-out"
@@ -141,6 +144,7 @@ export default function Dashboard() {
                   <Bar
                     dataKey="utilized"
                     name="Utilized Funds"
+                    fill="hsl(var(--secondary))"
                     radius={[4, 4, 0, 0]}
                     animationDuration={1500}
                     animationEasing="ease-out"
@@ -161,13 +165,17 @@ export default function Dashboard() {
 
         {/* Detailed Grid */}
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {candidatesData.map((data, i) => (
-            <Card key={i} className="hover:border-primary/30 transition-colors">
+          {wardData.map((data, i) => (
+            <Card
+              key={data.name}
+              className="hover:border-primary/30 transition-colors cursor-pointer hover:shadow-md"
+              onClick={() => setSelectedWard(data.name)}
+            >
               <CardHeader className="pb-2">
                 <div className="flex justify-between items-start">
                   <CardTitle className="text-lg font-serif">{data.name}</CardTitle>
                   <div className="text-xs font-medium bg-muted px-2 py-1 rounded">
-                    {(data.utilized / data.allocated * 100).toFixed(0)}% Utilized
+                    {data.allocated > 0 ? (data.utilized / data.allocated * 100).toFixed(0) : 0}% Utilized
                   </div>
                 </div>
                 <CardDescription>Rep: {data.candidate}</CardDescription>
@@ -190,8 +198,8 @@ export default function Dashboard() {
                     </div>
                     <div className="h-2 bg-muted rounded-full overflow-hidden">
                       <div
-                        className="h-full bg-secondary"
-                        style={{ width: `${(data.utilized / data.allocated * 100)}%` }}
+                        className="h-full bg-amber-600 dark:bg-amber-400"
+                        style={{ width: `${data.allocated > 0 ? (data.utilized / data.allocated * 100) : 0}%` }}
                       ></div>
                     </div>
                   </div>
@@ -201,6 +209,65 @@ export default function Dashboard() {
           ))}
         </div>
       </div>
-    </Layout>
+
+      <Dialog open={!!selectedWard} onOpenChange={(open) => !open && setSelectedWard(null)}>
+        <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="text-2xl font-serif">{selectedWard} Ward Candidates</DialogTitle>
+            <DialogDescription>
+              Performance report for candidates contesting in this ward.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 mt-4">
+            {candidates?.filter(c => c.ward === selectedWard).map(candidate => (
+              <div key={candidate.id} className="bg-muted/30 p-4 rounded-lg border">
+                <div className="flex justify-between items-start mb-2">
+                  <div>
+                    <h3 className="font-bold text-lg">{candidate.name}</h3>
+                    <p className="text-sm text-primary font-medium">{candidate.party}</p>
+                  </div>
+                  <div className="text-right">
+                    <span className={`text-xs font-bold px-2 py-1 rounded-full border ${candidate.funds.allocated > 0
+                      ? "bg-green-50 text-green-700 border-green-200"
+                      : "bg-slate-100 text-slate-600 border-slate-200"
+                      }`}>
+                      {candidate.funds.allocated > 0 ? "Incumbent / Active" : "New Contender"}
+                    </span>
+                  </div>
+                </div>
+
+                {candidate.funds.allocated === 0 ? (
+                  <p className="text-xs text-muted-foreground mt-2 italic bg-muted p-2 rounded border border-dashed">
+                    <strong>New Contenders:</strong> For independent candidates or new party faces, there is no "official fund" to track because they haven't held the office yet. Therefore, their historical expenditure is logically ₹0.
+                  </p>
+                ) : (
+                  <div className="space-y-3 mt-3">
+                    <div className="space-y-1">
+                      <div className="flex justify-between text-sm">
+                        <span className="text-muted-foreground">Allocated Budget</span>
+                        <span className="font-bold text-blue-600 dark:text-blue-400">{formatCurrency(candidate.funds.allocated)}</span>
+                      </div>
+                      <div className="flex justify-between text-sm">
+                        <span className="text-muted-foreground">Utilized Funds</span>
+                        <span className="font-bold text-amber-600 dark:text-amber-400">{formatCurrency(candidate.funds.utilized)}</span>
+                      </div>
+                    </div>
+                    <div className="h-2 bg-muted rounded-full overflow-hidden flex">
+                      <div
+                        className="h-full bg-amber-500"
+                        style={{ width: `${Math.min((candidate.funds.utilized / candidate.funds.allocated) * 100, 100)}%` }}
+                      />
+                    </div>
+                    <div className="text-xs text-right text-muted-foreground">
+                      {((candidate.funds.utilized / candidate.funds.allocated) * 100).toFixed(1)}% Utilization
+                    </div>
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        </DialogContent>
+      </Dialog>
+    </Layout >
   );
 }

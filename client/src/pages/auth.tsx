@@ -13,18 +13,41 @@ export default function AuthPage() {
   const [location, setLocation] = useLocation();
   const isLogin = location === "/login" || location === "/admin/login";
   const isAdminLogin = location === "/admin/login";
+  const isAdminSignup = location === "/admin/signup";
+  const isAdmin = isAdminLogin || isAdminSignup;
   const { toast } = useToast();
 
   const [formData, setFormData] = useState({
     username: "",
+    email: "",
     password: "",
     name: "",
-    role: "user"
+    otp: "",
+    role: isAdmin ? "admin" : "user"
   });
+
+  const [otpSent, setOtpSent] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
+      // Admin OTP Flow (Only for Login)
+      if (isAdminLogin && !otpSent) {
+        const res = await fetch("/api/auth/send-otp", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email: formData.email })
+        });
+
+        if (res.ok) {
+          setOtpSent(true);
+          toast({ title: "OTP Sent", description: "Check your email for the verification code." });
+        } else {
+          toast({ title: "Error", description: "Failed to send OTP. Check credentials or try again.", variant: "destructive" });
+        }
+        return;
+      }
+
       const endpoint = isLogin ? "/api/login" : "/api/register";
       const res = await fetch(endpoint, {
         method: "POST",
@@ -82,7 +105,7 @@ export default function AuthPage() {
             <CardTitle className="text-2xl font-serif font-bold">
               {isLogin
                 ? (isAdminLogin ? "Admin Login" : "Welcome Back")
-                : "Create Account"}
+                : (isAdminSignup ? "Admin Registration" : "Create Account")}
             </CardTitle>
             <CardDescription>
               {isLogin
@@ -102,8 +125,8 @@ export default function AuthPage() {
                     <SelectValue placeholder="Select role" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="user">User / Voter</SelectItem>
-                    <SelectItem value="admin">Admin</SelectItem>
+                    {!isAdmin && <SelectItem value="user">User / Voter</SelectItem>}
+                    {isAdmin && <SelectItem value="admin">Admin</SelectItem>}
                   </SelectContent>
                 </Select>
               </div>
@@ -120,27 +143,57 @@ export default function AuthPage() {
                 </div>
               )}
               <div className="space-y-2">
-                <Label htmlFor="voter-id">Username / Voter ID</Label>
+                <Label htmlFor="voter-id">{isAdmin ? "Username" : "Username / Voter ID"}</Label>
                 <Input
                   id="voter-id"
-                  placeholder="ABC1234567"
+                  placeholder={isAdmin ? "admin" : "ABC1234567"}
                   required
                   value={formData.username}
                   onChange={(e) => setFormData({ ...formData, username: e.target.value })}
                 />
               </div>
+
+              {isAdmin && (
+                <div className="space-y-2">
+                  <Label htmlFor="email">Email Address</Label>
+                  <Input
+                    id="email"
+                    type="email"
+                    placeholder="admin@jantrack.com"
+                    required
+                    value={formData.email}
+                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                  />
+                </div>
+              )}
               <div className="space-y-2">
                 <Label htmlFor="password">Password</Label>
                 <Input
                   id="password"
                   type="password"
                   required
+                  disabled={otpSent}
                   value={formData.password}
                   onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                 />
               </div>
+
+              {otpSent && (
+                <div className="space-y-2 animate-in fade-in slide-in-from-top-2">
+                  <Label htmlFor="otp">Enter OTP</Label>
+                  <Input
+                    id="otp"
+                    placeholder="123456"
+                    required
+                    value={formData.otp}
+                    onChange={(e) => setFormData({ ...formData, otp: e.target.value })}
+                  />
+                  <p className="text-xs text-muted-foreground">OTP sent to your registered email (Mock: Check console)</p>
+                </div>
+              )}
+
               <Button type="submit" className="w-full font-bold h-11 mt-2">
-                {isLogin ? (isAdminLogin ? "Login as Admin" : "Sign In") : "Register Now"}
+                {isLogin ? (isAdminLogin ? (otpSent ? "Verify & Login" : "Send OTP") : "Sign In") : "Register Now"}
               </Button>
             </form>
 
@@ -148,7 +201,7 @@ export default function AuthPage() {
               {isLogin ? (
                 <p>
                   Don't have an account?{" "}
-                  <Link href="/signup">
+                  <Link href={isAdmin ? "/admin/signup" : "/signup"}>
                     <a className="text-primary font-bold hover:underline">Sign Up</a>
                   </Link>
                 </p>

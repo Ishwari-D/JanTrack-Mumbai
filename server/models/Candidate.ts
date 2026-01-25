@@ -24,6 +24,8 @@ const candidateSchema = new mongoose.Schema({
     party: String,
     constituency: String,
     ward: String,
+    ward: String,
+    gender: String,
     age: Number,
     education: String,
     image: String,
