@@ -1,45 +1,70 @@
 import { Layout } from "@/components/layout";
 import { useQuery } from "@tanstack/react-query";
 import { Candidate } from "@shared/schema";
-import { Bar, BarChart, CartesianGrid, Legend, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
+import { Bar, BarChart, CartesianGrid, Legend, ResponsiveContainer, Tooltip, XAxis, YAxis, Cell } from "recharts";
+import { useLocation } from "wouter";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useMemo, useState, useEffect } from "react";
 
 export default function Dashboard() {
   const { data: candidates } = useQuery<Candidate[]>({
     queryKey: ["/api/candidates"],
   });
 
-  // Aggregate data for the chart by Ward
-  const wardAggregation = candidates?.reduce((acc, c) => {
-    const ward = c.ward;
-    if (!acc[ward]) {
-      acc[ward] = {
-        name: ward,
-        allocated: 0,
-        utilized: 0,
-        candidates: [] as string[]
-      };
-    }
-    acc[ward].allocated += c.funds.allocated;
-    acc[ward].utilized += c.funds.utilized;
-    acc[ward].candidates.push(c.name);
-    return acc;
-  }, {} as Record<string, { name: string; allocated: number; utilized: number; candidates: string[] }>) || {};
+  // Unique key to force re-render/animation on mount
+  const [chartKey, setChartKey] = useState(() => Math.random().toString(36));
+  const [location] = useLocation();
+  const [activeIndex, setActiveIndex] = useState<number | null>(null);
 
-  const wardData = Object.values(wardAggregation).map(w => ({
-    ...w,
-    candidate: w.candidates.join(", ") // Join multiple candidate names
-  })).sort((a, b) => a.name.localeCompare(b.name, undefined, { numeric: true }));
+  useEffect(() => {
+    // Reset key on mount or navigation to dashboard
+    setChartKey(Math.random().toString(36));
+
+    const handleRefresh = () => {
+      setChartKey(Math.random().toString(36));
+    };
+
+    window.addEventListener('force-refresh-animation', handleRefresh);
+    return () => {
+      window.removeEventListener('force-refresh-animation', handleRefresh);
+    };
+  }, [location]);
+
+  // Aggregate data for the chart by Ward
+  const wardAggregation = useMemo(() => {
+    return candidates?.reduce((acc, c) => {
+      const ward = c.ward;
+      if (!acc[ward]) {
+        acc[ward] = {
+          name: ward,
+          allocated: 0,
+          utilized: 0,
+          candidates: [] as string[]
+        };
+      }
+      acc[ward].allocated += c.funds.allocated;
+      acc[ward].utilized += c.funds.utilized;
+      acc[ward].candidates.push(c.name);
+      return acc;
+    }, {} as Record<string, { name: string; allocated: number; utilized: number; candidates: string[] }>) || {};
+  }, [candidates]);
+
+  const wardData = useMemo(() => {
+    return Object.values(wardAggregation).map(w => ({
+      ...w,
+      candidate: w.candidates.join(", ") // Join multiple candidate names
+    })).sort((a, b) => a.name.localeCompare(b.name, undefined, { numeric: true }));
+  }, [wardAggregation]);
 
   // Data for the grid cards (individual candidates, but with Ward information)
-  const candidatesData = candidates?.map(c => ({
+  const candidatesData = useMemo(() => candidates?.map(c => ({ // Re-applied useMemo
     name: c.ward,
     allocated: c.funds.allocated,
     utilized: c.funds.utilized,
     candidate: c.name
-  })) || [];
+  })) || [], [candidates]);
 
   const formatCurrency = (value: number) => `₹${(value / 10000000).toFixed(1)}Cr`;
 
@@ -54,32 +79,7 @@ export default function Dashboard() {
 
       <div className="container mx-auto px-4 py-8 space-y-8">
 
-        {/* Controls */}
-        <div className="flex flex-col sm:flex-row gap-4 items-center justify-between bg-card p-4 rounded-lg border shadow-sm">
-          <div className="flex gap-4 w-full sm:w-auto">
-            <Select defaultValue="2025-2026">
-              <SelectTrigger className="w-[180px] bg-background">
-                <SelectValue placeholder="Financial Year" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="2025-2026">FY 2025-2026</SelectItem>
-                <SelectItem value="2024-2025">FY 2024-2025</SelectItem>
-                <SelectItem value="2023-2024">FY 2023-2024</SelectItem>
-              </SelectContent>
-            </Select>
 
-            <Select defaultValue="all">
-              <SelectTrigger className="w-[180px] bg-background">
-                <SelectValue placeholder="Region" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Regions</SelectItem>
-                <SelectItem value="north">North Zone</SelectItem>
-                <SelectItem value="south">South Zone</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-        </div>
 
         {/* Main Chart */}
         <Card className="shadow-lg border-primary/10">
@@ -90,7 +90,19 @@ export default function Dashboard() {
           <CardContent>
             <div className="h-[400px] w-full">
               <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={wardData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
+                <BarChart
+                  key={chartKey}
+                  data={wardData}
+                  margin={{ top: 20, right: 30, left: 40, bottom: 20 }}
+                  onMouseMove={(state: any) => {
+                    if (state.isTooltipActive) {
+                      setActiveIndex(state.activeTooltipIndex);
+                    } else {
+                      setActiveIndex(null);
+                    }
+                  }}
+                  onMouseLeave={() => setActiveIndex(null)}
+                >
                   <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--border))" />
                   <XAxis
                     dataKey="name"
@@ -108,10 +120,39 @@ export default function Dashboard() {
                     formatter={(value: number) => formatCurrency(value)}
                     contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}
                     cursor={{ fill: 'hsl(var(--muted)/0.2)' }}
+                    wrapperStyle={{ zIndex: 100 }}
                   />
                   <Legend />
-                  <Bar dataKey="allocated" name="Allocated Funds" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} />
-                  <Bar dataKey="utilized" name="Utilized Funds" fill="hsl(var(--secondary))" radius={[4, 4, 0, 0]} />
+                  <Bar
+                    dataKey="allocated"
+                    name="Allocated Funds"
+                    radius={[4, 4, 0, 0]}
+                    animationDuration={1500}
+                    animationEasing="ease-out"
+                  >
+                    {wardData.map((_, index) => (
+                      <Cell
+                        key={`cell-${index}`}
+                        fill="hsl(var(--primary))"
+                        fillOpacity={activeIndex === null || activeIndex === index ? 1 : 0.3}
+                      />
+                    ))}
+                  </Bar>
+                  <Bar
+                    dataKey="utilized"
+                    name="Utilized Funds"
+                    radius={[4, 4, 0, 0]}
+                    animationDuration={1500}
+                    animationEasing="ease-out"
+                  >
+                    {wardData.map((_, index) => (
+                      <Cell
+                        key={`cell-${index}`}
+                        fill="hsl(var(--secondary))"
+                        fillOpacity={activeIndex === null || activeIndex === index ? 1 : 0.3}
+                      />
+                    ))}
+                  </Bar>
                 </BarChart>
               </ResponsiveContainer>
             </div>

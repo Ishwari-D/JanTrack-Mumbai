@@ -57,7 +57,14 @@ export function Layout({ children }: { children: React.ReactNode }) {
               ['Report Issue', '/report-issue']
             ].map(([label, path]) => (
               <Link key={path} href={path}>
-                <a className={`text-sm font-medium transition-colors relative py-1 ${location === path ? 'text-primary' : 'text-muted-foreground hover:text-primary'}`}>
+                <a
+                  className={`text-sm font-medium transition-colors relative py-1 ${location === path ? 'text-primary' : 'text-muted-foreground hover:text-primary'}`}
+                  onClick={() => {
+                    if (location === path && path === '/dashboard') {
+                      window.dispatchEvent(new Event('force-refresh-animation'));
+                    }
+                  }}
+                >
                   {label}
                   {location === path && (
                     <motion.div
@@ -104,7 +111,17 @@ export function Layout({ children }: { children: React.ReactNode }) {
             <nav className="flex flex-col gap-4">
               <Link href="/"><a className="text-base font-medium" onClick={() => setIsMenuOpen(false)}>Home</a></Link>
               <Link href="/ward-map"><a className="text-base font-medium" onClick={() => setIsMenuOpen(false)}>Ward Map</a></Link>
-              <Link href="/dashboard"><a className="text-base font-medium" onClick={() => setIsMenuOpen(false)}>Dashboard</a></Link>
+              <Link href="/dashboard">
+                <a
+                  className="text-base font-medium"
+                  onClick={() => {
+                    setIsMenuOpen(false);
+                    if (location === '/dashboard') {
+                      window.dispatchEvent(new Event('force-refresh-animation'));
+                    }
+                  }}
+                >Dashboard</a>
+              </Link>
               <Link href="/report-issue"><a className="text-base font-medium" onClick={() => setIsMenuOpen(false)}>Report Issue</a></Link>
             </nav>
             <div className="pt-4 border-t">
