@@ -1,5 +1,5 @@
 import { Link, useLocation } from "wouter";
-import { Search, Menu, X, ShieldCheck, Twitter, Facebook, Linkedin, Github } from "lucide-react";
+import { Search, Menu, X, ShieldCheck } from "lucide-react";
 import { motion } from "framer-motion";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
@@ -177,20 +177,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
             <p className="text-primary-foreground/80 dark:text-slate-600 text-sm leading-relaxed max-w-xs">
               Empowering Mumbai citizens with verified data for informed democratic participation. Transparency builds trust.
             </p>
-            <div className="flex gap-4">
-              <a href="#" className="w-10 h-10 rounded-full bg-white/10 dark:bg-slate-100 flex items-center justify-center hover:bg-white dark:hover:bg-primary hover:text-primary dark:hover:text-white transition-colors">
-                <Twitter size={18} />
-              </a>
-              <a href="#" className="w-10 h-10 rounded-full bg-white/10 dark:bg-slate-100 flex items-center justify-center hover:bg-white dark:hover:bg-primary hover:text-primary dark:hover:text-white transition-colors">
-                <Facebook size={18} />
-              </a>
-              <a href="#" className="w-10 h-10 rounded-full bg-white/10 dark:bg-slate-100 flex items-center justify-center hover:bg-white dark:hover:bg-primary hover:text-primary dark:hover:text-white transition-colors">
-                <Linkedin size={18} />
-              </a>
-              <a href="#" className="w-10 h-10 rounded-full bg-white/10 dark:bg-slate-100 flex items-center justify-center hover:bg-white dark:hover:bg-primary hover:text-primary dark:hover:text-white transition-colors">
-                <Github size={18} />
-              </a>
-            </div>
+
           </div>
 
           <div>
@@ -249,7 +236,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
           </div>
         </div>
         <div className="container mx-auto px-4 mt-16 pt-8 border-t border-white/10 dark:border-slate-200 text-center text-sm text-primary-foreground/50 dark:text-slate-400">
-          © 2026 JanTrack Mumbai Foundation. All rights reserved. • Built for Democracy.
+          © 2026 JanTrack Mumbai. All rights reserved. • Built for Democracy.
         </div>
       </footer>
     </div>
