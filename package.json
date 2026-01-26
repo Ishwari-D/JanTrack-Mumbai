@@ -6,6 +6,7 @@
   "scripts": {
     "dev:client": "vite dev --port 5000",
     "dev": "tsx watch server/index.ts",
+    "build:client": "vite build",
     "build": "tsx script/build.ts",
     "start": "NODE_ENV=production node dist/index.cjs",
     "check": "tsc",
