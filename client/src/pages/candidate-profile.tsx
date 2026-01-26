@@ -181,7 +181,7 @@ export default function CandidateProfile() {
                       <MapPin size={12} className="mr-1" /> {candidate.constituency}
                     </Badge>
                     <Badge variant="outline" className="border-muted bg-muted/20">
-                      Ward {candidate.ward}
+                      {candidate.ward.startsWith('Ward') ? candidate.ward : `Ward ${candidate.ward}`}
                     </Badge>
                   </div>
                   <h1 className="text-4xl font-serif font-bold text-foreground">
