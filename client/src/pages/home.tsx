@@ -7,28 +7,7 @@ import { Link, useLocation } from "wouter";
 import { useQuery } from "@tanstack/react-query";
 import { motion, useSpring, useTransform, useInView, useScroll } from "framer-motion";
 import { useState, useEffect, useRef } from "react";
-
-// Reuse Candidate Interface
-interface Candidate {
-  id: string;
-  name: string;
-  party: string;
-  constituency: string;
-  ward: string;
-  age: number;
-  education: string;
-  image: string;
-  criminalCases: number;
-  assets: string;
-  attendance: number;
-  promises: any[];
-  funds: {
-    allocated: number;
-    utilized: number;
-    projects: any[];
-  };
-  bio: string;
-}
+import { Candidate } from "@shared/schema";
 
 function Counter({ value, prefix = "", suffix = "" }: { value: number, prefix?: string, suffix?: string }) {
   const ref = useRef(null);

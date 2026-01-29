@@ -29,44 +29,9 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { useToast } from "@/hooks/use-toast";
 import { Plus, Trash, Save, CheckCircle, Trash2, Loader2 } from "lucide-react";
 import { getCandidateImage } from "@/lib/candidate-utils";
+import { Candidate, PromiseItem, Project } from "@shared/schema";
 
 // Types
-interface PromiseItem {
-    id: string;
-    title: string;
-    description: string;
-    status: "completed" | "in-progress" | "not-started" | "broken";
-    category: string;
-    completionPercentage: number;
-}
-
-interface Project {
-    name: string;
-    cost: number;
-    status: string;
-}
-
-interface Candidate {
-    id: string;
-    name: string;
-    party: string;
-    constituency: string;
-    ward: string;
-    gender: string;
-    age: number;
-    education: string;
-    image: string;
-    criminalCases: number;
-    assets: string;
-    attendance: number;
-    promises: PromiseItem[];
-    funds: {
-        allocated: number;
-        utilized: number;
-        projects: Project[];
-    };
-    bio: string;
-}
 
 const defaultCandidate: Candidate = {
     id: "",

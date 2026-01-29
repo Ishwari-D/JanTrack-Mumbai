@@ -43,6 +43,7 @@ export async function registerRoutes(
 
     const otp = randomInt(100000, 999999).toString();
     await storage.saveOtp(user.username, otp);
+    console.log("Generated OTP for " + user.username + ":", otp);
 
     const emailSent = await emailService.sendEmail(
       user.email,
