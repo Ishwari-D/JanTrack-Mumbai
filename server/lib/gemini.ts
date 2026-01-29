@@ -3,16 +3,19 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 
 // Using the experimental model as verified by user, can fallback to gemini-1.5-flash if needed
 if (!process.env.GEMINI_API_KEY) {
-    throw new Error("GEMINI_API_KEY environment variable is missing");
+    console.warn("GEMINI_API_KEY environment variable is missing. Chat features will not work.");
 }
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
+const genAI = process.env.GEMINI_API_KEY ? new GoogleGenerativeAI(process.env.GEMINI_API_KEY) : null;
+const model = genAI ? genAI.getGenerativeModel({ model: "gemini-2.5-flash" }) : null;
 
 // Simple in-memory cache to save quota
 const responseCache = new Map<string, { reply: string, timestamp: number }>();
 const CACHE_TTL = 1000 * 60 * 60; // 1 hour cache
 
 export async function getChatResponse(message: string) {
+    if (!model) {
+        return "I am sorry, but the AI chat feature is currently disabled (missing API key).";
+    }
     try {
         // Check cache first
         const cacheKey = message.toLowerCase().trim();

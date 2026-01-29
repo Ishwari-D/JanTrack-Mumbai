@@ -1,7 +1,7 @@
 import { Layout } from "@/components/layout";
 import { useQuery } from "@tanstack/react-query";
 import { Candidate } from "@shared/schema";
-import { Bar, BarChart, CartesianGrid, Legend, ResponsiveContainer, Tooltip, XAxis, YAxis, Cell, Pie, PieChart } from "recharts";
+import { Legend, ResponsiveContainer, Tooltip, Cell, Pie, PieChart } from "recharts";
 import { useLocation } from "wouter";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -17,7 +17,6 @@ export default function Dashboard() {
   // Unique key to force re-render/animation on mount
   const [chartKey, setChartKey] = useState(() => Math.random().toString(36));
   const [location] = useLocation();
-  const [activeIndex, setActiveIndex] = useState<number | null>(null);
   const [selectedWard, setSelectedWard] = useState<string | null>(null);
 
   useEffect(() => {
@@ -34,53 +33,45 @@ export default function Dashboard() {
     };
   }, [location]);
 
-  // Aggregate data for the chart by Ward
-  const wardAggregation = useMemo(() => {
-    return candidates?.reduce((acc, c) => {
-      const ward = c.ward;
-      if (!acc[ward]) {
-        acc[ward] = {
-          name: ward,
-          allocated: 0,
-          utilized: 0,
-          planned: 0,
-          candidates: [] as string[]
-        };
-      }
-      acc[ward].allocated += c.funds.allocated;
-      acc[ward].utilized += c.funds.utilized;
-      const projectsCost = c.funds.projects?.reduce((sum: number, p: any) => sum + p.cost, 0) || 0;
-      acc[ward].planned += Math.max(0, projectsCost - c.funds.utilized);
-      acc[ward].candidates.push(c.name);
-      return acc;
-    }, {} as Record<string, { name: string; allocated: number; utilized: number; planned: number; candidates: string[] }>) || {};
-  }, [candidates]);
 
-  const wardData = useMemo(() => {
-    return Object.values(wardAggregation).map(w => ({
-      ...w,
-      candidate: w.candidates.join(", ") // Join multiple candidate names
-    })).sort((a, b) => a.name.localeCompare(b.name, undefined, { numeric: true }));
-  }, [wardAggregation]);
 
   const PARTY_COLORS: Record<string, string> = {
     "Congress": "#0091ff",
-    "BJP": "#ff8800",
-    "Shiv Sena": "#ff4400",
-    "Shiv Sena (UBT)": "#ff2200",
-    "MNS": "#ffcc00",
-    "NCP": "#009900",
-    "NCP (SP)": "#00cc00",
+    "INC": "#0091ff",
+    "BJP": "#FF9933",
+    "Shiv Sena": "#FF5722",
+    "Shiv Sena (UBT)": "#D32F2F",
+    "Shiv Sena(UBT)": "#D32F2F",
+    "MNS": "#FFD600",
+    "NCP (AP)": "#1B5E20",
+    "NCP(AP)": "#1B5E20",
+    "NCP (SP)": "#4CAF50",
+    "NCP(SP)": "#4CAF50",
+    "Independent": "#94a3b8",
     "AAP": "#00ccff",
     "BIP": "#0066ff",
     "BAP": "#0044ff",
     "VBA": "#6600ff",
+    "AIMIM": "#01579B",
+    "CPI(M)": "#FF0000",
+    "SP": "#FF0000",
   };
 
   const partyAggregation = useMemo(() => {
     const parties: Record<string, any> = {};
     candidates?.forEach(c => {
-      const pName = c.party || "Independent";
+      let pName = c.party || "Independent";
+
+      // Rename Shiv Sena(UBT) to Shiv Sena as requested
+      if (pName === "Shiv Sena(UBT)") {
+        pName = "Shiv Sena";
+      }
+
+      // Filter out NCP and SS (UBT) as requested
+      if (pName === "NCP" || pName === "SS (UBT)") {
+        return;
+      }
+
       if (!parties[pName]) {
         parties[pName] = {
           name: pName,
@@ -170,91 +161,7 @@ export default function Dashboard() {
 
 
 
-        {/* Main Chart */}
-        <Card className="shadow-lg border-primary/10">
-          <CardHeader>
-            <CardTitle className="font-serif">Fund Utilization by Ward</CardTitle>
-            <CardDescription>Comparing allocated budget vs. actual spending</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="h-[400px] w-full">
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart
-                  key={chartKey}
-                  data={wardData}
-                  margin={{ top: 20, right: 30, left: 40, bottom: 20 }}
-                  onMouseMove={(state: any) => {
-                    if (state.isTooltipActive) {
-                      setActiveIndex(state.activeTooltipIndex);
-                    } else {
-                      setActiveIndex(null);
-                    }
-                  }}
-                  onMouseLeave={() => setActiveIndex(null)}
-                >
-                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--border))" />
-                  <XAxis
-                    dataKey="name"
-                    tick={{ fill: 'hsl(var(--muted-foreground))' }}
-                    axisLine={false}
-                    tickLine={false}
-                  />
-                  <YAxis
-                    tickFormatter={formatCurrency}
-                    tick={{ fill: 'hsl(var(--muted-foreground))' }}
-                    axisLine={false}
-                    tickLine={false}
-                  />
-                  <Tooltip
-                    formatter={(value: number) => formatCurrency(value)}
-                    contentStyle={{
-                      borderRadius: '8px',
-                      border: 'none',
-                      boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
-                      backgroundColor: 'hsl(var(--card))',
-                      color: 'hsl(var(--card-foreground))'
-                    }}
-                    cursor={{ fill: 'hsl(var(--muted)/0.2)' }}
-                    wrapperStyle={{ zIndex: 100 }}
-                  />
-                  <Legend />
-                  <Bar
-                    dataKey="allocated"
-                    name="Allocated Funds"
-                    fill="hsl(var(--primary))"
-                    radius={[4, 4, 0, 0]}
-                    animationDuration={1500}
-                    animationEasing="ease-out"
-                  >
-                    {wardData.map((_, index) => (
-                      <Cell
-                        key={`cell-${index}`}
-                        fill="hsl(var(--primary))"
-                        fillOpacity={activeIndex === null || activeIndex === index ? 1 : 0.3}
-                      />
-                    ))}
-                  </Bar>
-                  <Bar
-                    dataKey="utilized"
-                    name="Utilized Funds"
-                    fill="hsl(var(--secondary))"
-                    radius={[4, 4, 0, 0]}
-                    animationDuration={1500}
-                    animationEasing="ease-out"
-                  >
-                    {wardData.map((_, index) => (
-                      <Cell
-                        key={`cell-${index}`}
-                        fill="hsl(var(--secondary))"
-                        fillOpacity={activeIndex === null || activeIndex === index ? 1 : 0.3}
-                      />
-                    ))}
-                  </Bar>
-                </BarChart>
-              </ResponsiveContainer>
-            </div>
-          </CardContent>
-        </Card>
+
 
         {/* Candidates by Party Section */}
         <div className="space-y-6">
