@@ -344,7 +344,7 @@ export default function Dashboard() {
                               ))}
                             </Pie>
                             <Tooltip
-                              contentStyle={{ fontSize: '10px', p: 1, borderRadius: '4px' }}
+                              contentStyle={{ fontSize: '10px', padding: '4px', borderRadius: '4px' }}
                               formatter={(v: number) => v}
                             />
                           </PieChart>
@@ -383,7 +383,7 @@ export default function Dashboard() {
                               ))}
                             </Pie>
                             <Tooltip
-                              contentStyle={{ fontSize: '10px', p: 1, borderRadius: '4px' }}
+                              contentStyle={{ fontSize: '10px', padding: '4px', borderRadius: '4px' }}
                               formatter={(v: number) => v}
                             />
                           </PieChart>
