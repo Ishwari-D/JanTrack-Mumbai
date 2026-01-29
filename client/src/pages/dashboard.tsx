@@ -1,7 +1,7 @@
 import { Layout } from "@/components/layout";
 import { useQuery } from "@tanstack/react-query";
 import { Candidate } from "@shared/schema";
-import { Bar, BarChart, CartesianGrid, Legend, ResponsiveContainer, Tooltip, XAxis, YAxis, Cell } from "recharts";
+import { Bar, BarChart, CartesianGrid, Legend, ResponsiveContainer, Tooltip, XAxis, YAxis, Cell, Pie, PieChart } from "recharts";
 import { useLocation } from "wouter";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -43,14 +43,17 @@ export default function Dashboard() {
           name: ward,
           allocated: 0,
           utilized: 0,
+          planned: 0,
           candidates: [] as string[]
         };
       }
       acc[ward].allocated += c.funds.allocated;
       acc[ward].utilized += c.funds.utilized;
+      const projectsCost = c.funds.projects?.reduce((sum: number, p: any) => sum + p.cost, 0) || 0;
+      acc[ward].planned += Math.max(0, projectsCost - c.funds.utilized);
       acc[ward].candidates.push(c.name);
       return acc;
-    }, {} as Record<string, { name: string; allocated: number; utilized: number; candidates: string[] }>) || {};
+    }, {} as Record<string, { name: string; allocated: number; utilized: number; planned: number; candidates: string[] }>) || {};
   }, [candidates]);
 
   const wardData = useMemo(() => {
@@ -174,33 +177,57 @@ export default function Dashboard() {
               <CardHeader className="pb-2">
                 <div className="flex justify-between items-start">
                   <CardTitle className="text-lg font-serif">{data.name}</CardTitle>
-                  <div className="text-xs font-medium bg-muted px-2 py-1 rounded">
+                  <div className="text-xs font-bold px-2 py-1 rounded bg-primary/10 text-primary">
                     {data.allocated > 0 ? (data.utilized / data.allocated * 100).toFixed(0) : 0}% Utilized
                   </div>
                 </div>
-                <CardDescription>Rep: {data.candidate}</CardDescription>
+                <CardDescription className="line-clamp-2 mt-1">
+                  <span className="font-semibold text-foreground">Rep:</span> {data.candidate}
+                </CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="space-y-4 mt-2">
-                  <div className="space-y-1">
-                    <div className="flex justify-between text-sm">
-                      <span className="text-muted-foreground">Allocated</span>
-                      <span className="font-bold">{formatCurrency(data.allocated)}</span>
-                    </div>
-                    <div className="h-2 bg-muted rounded-full overflow-hidden">
-                      <div className="h-full bg-primary w-full"></div>
-                    </div>
+                <div className="flex items-center gap-4">
+                  <div className="h-[120px] w-[120px] flex-shrink-0">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <PieChart>
+                        <Pie
+                          data={[
+                            { name: "Spent", value: data.utilized },
+                            { name: "Planned", value: data.planned },
+                            { name: "Balance", value: Math.max(0, data.allocated - data.utilized - data.planned) },
+                          ].filter(d => d.value > 0)}
+                          cx="50%"
+                          cy="50%"
+                          innerRadius={0}
+                          outerRadius={50}
+                          stroke="#fff"
+                          strokeWidth={2}
+                          dataKey="value"
+                        >
+                          <Cell fill="#f39c12" />
+                          <Cell fill="#3498db" />
+                          <Cell fill="#5d6d7e" />
+                        </Pie>
+                        <Tooltip
+                          formatter={(value: number) => formatCurrency(value)}
+                          contentStyle={{
+                            fontSize: '10px',
+                            borderRadius: '4px',
+                            border: '1px solid hsl(var(--border))',
+                            backgroundColor: 'hsl(var(--card))'
+                          }}
+                        />
+                      </PieChart>
+                    </ResponsiveContainer>
                   </div>
-                  <div className="space-y-1">
-                    <div className="flex justify-between text-sm">
-                      <span className="text-muted-foreground">Spent</span>
-                      <span className="font-bold">{formatCurrency(data.utilized)}</span>
+                  <div className="flex-1 space-y-3">
+                    <div className="space-y-0.5">
+                      <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-bold">Allocated</p>
+                      <p className="text-lg font-bold text-primary">{formatCurrency(data.allocated)}</p>
                     </div>
-                    <div className="h-2 bg-muted rounded-full overflow-hidden">
-                      <div
-                        className="h-full bg-amber-600 dark:bg-amber-400"
-                        style={{ width: `${data.allocated > 0 ? (data.utilized / data.allocated * 100) : 0}%` }}
-                      ></div>
+                    <div className="space-y-0.5">
+                      <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-bold">Spent</p>
+                      <p className="text-lg font-bold text-secondary">{formatCurrency(data.utilized)}</p>
                     </div>
                   </div>
                 </div>
