@@ -8,18 +8,20 @@ import { MapContainer, TileLayer, Marker, Popup, Tooltip, useMap } from 'react-l
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 
-// Fix for default marker icon in Leaflet with bundlers
 import icon from 'leaflet/dist/images/marker-icon.png';
+import iconRetina from 'leaflet/dist/images/marker-icon-2x.png';
 import iconShadow from 'leaflet/dist/images/marker-shadow.png';
 
-let DefaultIcon = L.icon({
+const DefaultIcon = L.icon({
+  iconRetinaUrl: iconRetina,
   iconUrl: icon,
   shadowUrl: iconShadow,
   iconSize: [25, 41],
-  iconAnchor: [12, 41]
+  iconAnchor: [12, 41],
+  popupAnchor: [1, -34],
+  tooltipAnchor: [16, -28],
+  shadowSize: [41, 41]
 });
-
-L.Marker.prototype.options.icon = DefaultIcon;
 
 const WARD_DATA = [
   // South Mumbai (City)
@@ -597,7 +599,7 @@ export default function WardMap() {
                 />
 
                 {WARD_DATA.map((ward) => (
-                  <Marker key={ward.id} position={ward.coords}>
+                  <Marker key={ward.id} position={ward.coords} icon={DefaultIcon}>
                     <Popup className="min-w-[300px] max-w-[350px]">
                       <div className="p-2 space-y-2">
                         <h3 className="font-bold text-base border-b pb-1 text-primary">{ward.name}</h3>
