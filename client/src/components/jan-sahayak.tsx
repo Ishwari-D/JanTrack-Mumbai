@@ -21,6 +21,19 @@ export function JanSahayak() {
     const [inputValue, setInputValue] = useState("");
     const scrollRef = useRef<HTMLDivElement>(null);
 
+    const [showPrompt, setShowPrompt] = useState(false);
+
+    useEffect(() => {
+        const handleScroll = () => {
+            if (window.scrollY > 100) {
+                setShowPrompt(true);
+            }
+        };
+
+        window.addEventListener("scroll", handleScroll);
+        return () => window.removeEventListener("scroll", handleScroll);
+    }, []);
+
     const chatMutation = useMutation({
         mutationFn: async (message: string) => {
             const res = await apiRequest("POST", "/api/chat", { message });
@@ -162,6 +175,32 @@ export function JanSahayak() {
                                 </div>
                             </div>
                         </Card>
+                    </motion.div>
+                )}
+            </AnimatePresence>
+
+            {/* Prompt Bubble */}
+            <AnimatePresence>
+                {!isOpen && showPrompt && (
+                    <motion.div
+                        initial={{ opacity: 0, scale: 0.8, y: 10 }}
+                        animate={{ opacity: 1, scale: 1, y: 0 }}
+                        exit={{ opacity: 0, scale: 0.8 }}
+                        transition={{ delay: 1, type: "spring" }}
+                        className="fixed bottom-24 right-6 z-50 origin-bottom-right"
+                    >
+                        <div
+                            className="bg-white dark:bg-slate-800 text-foreground px-4 py-3 rounded-2xl rounded-br-none shadow-xl border border-primary/20 cursor-pointer hover:scale-105 transition-transform relative"
+                            onClick={() => setIsOpen(true)}
+                        >
+                            <p className="text-sm font-bold flex items-center gap-2">
+                                <span className="text-xl">👋</span>
+                                May I help you?
+                            </p>
+
+                            {/* Arrow pointing down to the robot */}
+                            <div className="absolute right-0 -bottom-2 w-4 h-4 bg-white dark:bg-slate-800 border-b border-r border-primary/20 rotate-45 transform translate-x-[-10px]"></div>
+                        </div>
                     </motion.div>
                 )}
             </AnimatePresence>
