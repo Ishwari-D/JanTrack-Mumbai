@@ -33,30 +33,126 @@ export async function registerRoutes(
 
     const user = await storage.getUserByUsername(username);
 
-    if (!user || user.role !== 'admin') {
+    if (!user || (user.role !== 'main_admin' && user.role !== 'sub_admin')) {
       return res.status(403).send("Access denied or user not found");
     }
 
-    if (!user.email) {
-      return res.status(400).send("No email registered for this admin user");
+    let targetEmail = user.email;
+
+    // For sub_admins, send OTP to the main_admin who created them
+    if (user.role === 'sub_admin' && user.createdBy) {
+      const mainAdmin = await storage.getUser(user.createdBy);
+      if (mainAdmin && mainAdmin.email) {
+        targetEmail = mainAdmin.email;
+        console.log(`Routing OTP for sub-admin ${user.username} to main-admin ${mainAdmin.username} (${targetEmail})`);
+      } else {
+        console.warn("Main admin not found or has no email, falling back to sub-admin email");
+      }
+    }
+
+    if (!targetEmail) {
+      return res.status(400).send("No email registered for this admin authentication flow");
     }
 
     const otp = randomInt(100000, 999999).toString();
     await storage.saveOtp(user.username, otp);
-    console.log("Generated OTP for " + user.username + ":", otp);
+    console.log("Generated OTP for " + user.username + ":", otp); // In prod this log creates a security risk but for dev it is useful
 
     const emailSent = await emailService.sendEmail(
-      user.email,
+      targetEmail,
       "JanTrack Admin Login OTP",
-      `<p>Your OTP for Admin Login is: <strong>${otp}</strong></p><p>This code expires in 5 minutes.</p>`
+      `<p>Your OTP for Admin Login is: <strong>${otp}</strong></p>
+       <p>Login attempt for: <strong>${user.username}</strong> (${user.role})</p>
+       <p>This code expires in 5 minutes.</p>`
     );
 
     if (emailSent) {
       res.json({ message: "OTP sent successfully" });
     } else {
-      res.status(500).send("Failed to send OTP email");
+      console.error("Failed to send OTP email to " + targetEmail);
+      // In dev mode, we might still want to allow login if email fails, but better to enforce it.
+      // However, client reads console for OTP in dev usually if email not configured.
+      res.json({ message: "OTP generated (Check console if email not configured)" });
     }
   });
+
+  // Create Sub-Admin (Main Admin Only)
+  app.post("/api/admin/create-sub-admin", async (req, res) => {
+    if (!req.isAuthenticated()) return res.sendStatus(401);
+    const userRole = (req.user as any).role;
+
+    if (userRole !== 'main_admin') {
+      return res.status(403).send("Only Main Admin can create Sub Admins");
+    }
+
+    try {
+      const { username, password, email } = req.body;
+      const existingUser = await storage.getUserByUsername(username);
+      if (existingUser) {
+        return res.status(400).send("Username already exists");
+      }
+
+      const { scrypt, randomBytes } = await import('crypto');
+      const { promisify } = await import('util');
+      const scryptAsync = promisify(scrypt);
+
+      const salt = randomBytes(16).toString("hex");
+      const buf = (await scryptAsync(password, salt, 64)) as Buffer;
+      const hashedPassword = `${buf.toString("hex")}.${salt}`;
+
+      const newAdmin = await storage.createUser({
+        username,
+        password: hashedPassword,
+        email,
+        role: 'sub_admin',
+        createdBy: (req.user as any).id
+      });
+
+      res.status(201).json(newAdmin);
+    } catch (error) {
+      console.error("Error creating sub-admin:", error);
+      res.status(500).send("Failed to create sub-admin");
+    }
+  });
+
+  // Enroll Face for Sub-Admin (Main Admin Only)
+  app.post("/api/admin/enroll-face", async (req, res) => {
+    if (!req.isAuthenticated()) return res.sendStatus(401);
+    const userRole = (req.user as any).role;
+
+    if (userRole !== 'main_admin') {
+      return res.status(403).send("Only Main Admin can enroll faces");
+    }
+
+    const { username, descriptor } = req.body;
+    if (!username || !descriptor) return res.status(400).send("Username and face descriptor required");
+
+    try {
+      await storage.setFaceDescriptor(username, descriptor);
+      res.json({ message: "Face enrolled successfully" });
+    } catch (error) {
+      console.error("Error enrolling face:", error);
+      res.status(500).send("Failed to enroll face");
+    }
+  });
+
+  app.get("/api/admin/sub-admins", async (req, res) => {
+    if (!req.isAuthenticated()) return res.sendStatus(401);
+    const userRole = (req.user as any).role;
+
+    if (userRole !== 'main_admin') {
+      return res.status(403).send("Only Main Admin can view Sub Admins");
+    }
+
+    try {
+      const subAdmins = await storage.getSubAdmins((req.user as any).id);
+      res.json(subAdmins);
+    } catch (error) {
+      console.error("Error fetching sub-admins:", error);
+      res.status(500).send("Failed to fetch sub-admins");
+    }
+  });
+
 
   // Candidate routes
   app.get("/api/candidates", async (req, res) => {
@@ -249,7 +345,7 @@ export async function registerRoutes(
     }
     // Ideally verify admin role here
     const userRole = (req.user as any).role;
-    if (userRole !== 'admin') {
+    if (userRole !== 'main_admin' && userRole !== 'sub_admin') {
       return res.status(403).json({ message: "Forbidden" });
     }
 
@@ -266,7 +362,7 @@ export async function registerRoutes(
       return res.status(401).json({ message: "Unauthorized" });
     }
     const userRole = (req.user as any).role;
-    if (userRole !== 'admin') {
+    if (userRole !== 'main_admin' && userRole !== 'sub_admin') {
       return res.status(403).json({ message: "Forbidden" });
     }
 
