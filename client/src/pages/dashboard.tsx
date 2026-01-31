@@ -113,7 +113,7 @@ export default function Dashboard() {
                     tickLine={false}
                   />
                   <Tooltip
-                    formatter={(value: number) => formatCurrency(value)}
+                    formatter={(value: number) => [formatCurrency(value), "Amount"]}
                     contentStyle={{
                       borderRadius: '8px',
                       border: 'none',
