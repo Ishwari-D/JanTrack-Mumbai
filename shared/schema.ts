@@ -8,7 +8,8 @@ export const users = pgTable("users", {
   username: text("username").notNull().unique(),
   email: text("email"), // Optional for now to avoid breaking existing users immediately, but usually unique
   password: text("password").notNull(),
-  role: text("role").notNull().default('user'),
+  role: text("role").notNull().default('user'), // 'main_admin' | 'sub_admin' | 'user' 
+  createdBy: text("created_by"), // ID of the admin who created this user (for hierarchy)
 });
 
 export const insertUserSchema = createInsertSchema(users).pick({
@@ -16,6 +17,7 @@ export const insertUserSchema = createInsertSchema(users).pick({
   email: true,
   password: true,
   role: true,
+  createdBy: true,
 });
 
 export type InsertUser = z.infer<typeof insertUserSchema>;

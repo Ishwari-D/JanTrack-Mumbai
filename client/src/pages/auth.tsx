@@ -9,6 +9,9 @@ import { ShieldCheck } from "lucide-react";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { useTheme } from "@/hooks/use-theme";
+import { loadModels, getFaceDescriptor } from "@/lib/face-auth";
+import { useRef, useEffect } from "react";
+import { Loader2, Camera, User } from "lucide-react";
 
 export default function AuthPage() {
   const [location, setLocation] = useLocation();
@@ -29,6 +32,31 @@ export default function AuthPage() {
   });
 
   const [otpSent, setOtpSent] = useState(false);
+  const [isFaceRequired, setIsFaceRequired] = useState(false);
+  const [isModelsLoading, setIsModelsLoading] = useState(false);
+  const videoRef = useRef<HTMLVideoElement>(null);
+
+  useEffect(() => {
+    if (isFaceRequired) {
+      setIsModelsLoading(true);
+      loadModels().then(() => {
+        setIsModelsLoading(false);
+        startCamera();
+      }).catch(() => {
+        toast({ title: "Error", description: "Failed to load AI models", variant: "destructive" });
+        setIsModelsLoading(false);
+      });
+    }
+  }, [isFaceRequired]);
+
+  const startCamera = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+      if (videoRef.current) videoRef.current.srcObject = stream;
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -50,23 +78,42 @@ export default function AuthPage() {
         return;
       }
 
+      let payload: any = { ...formData };
+
+      // Face Verification Logic
+      if (isFaceRequired && videoRef.current) {
+        try {
+          // Capture face
+          const descriptor = await getFaceDescriptor(videoRef.current);
+          if (!descriptor) {
+            toast({ title: "No Face Detected", description: "Please look at the camera", variant: "destructive" });
+            return;
+          }
+          payload.faceDescriptor = Array.from(descriptor);
+        } catch (err) {
+          toast({ title: "Error", description: "Face detection failed", variant: "destructive" });
+          return;
+        }
+      }
+
       const endpoint = isLogin ? "/api/login" : "/api/register";
       const res = await fetch(endpoint, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData)
+        body: JSON.stringify(payload)
       });
 
       if (res.ok) {
         const userData = await res.json();
 
-        if (isAdminLogin && userData.role !== 'admin') {
+        // existing logic...
+        if (isAdminLogin && userData.role !== 'admin' && userData.role !== 'main_admin' && userData.role !== 'sub_admin') {
+          // ... (same as before)
           toast({
             title: "Access Denied",
             description: "You do not have admin privileges.",
             variant: "destructive"
           });
-          // Logout immediately if not authorized
           await fetch("/api/logout", { method: "POST" });
           return;
         }
@@ -76,18 +123,50 @@ export default function AuthPage() {
           description: isLogin ? "Logged in successfully" : "Account created successfully",
         });
 
-        const targetPath = userData.role === 'admin' ? "/admin" : "/";
+        const targetPath = (userData.role === 'admin' || userData.role === 'main_admin' || userData.role === 'sub_admin') ? "/admin" : "/";
         setLocation(targetPath);
         window.location.href = targetPath;
       } else {
-        const data = await res.text();
-        toast({
-          title: "Error",
-          description: data || "Authentication failed",
-          variant: "destructive"
-        });
+        const contentType = res.headers.get("content-type");
+        if (contentType && contentType.indexOf("application/json") !== -1) {
+          const data = await res.json();
+          if (res.status === 403) {
+            if (data.requireFace) {
+              setIsFaceRequired(true);
+              toast({ title: "Face ID Required", description: "Sub-Admin login requires facial verification." });
+              return;
+            }
+            if (data.requireOtp) {
+              // Face passed, now OTP
+              setIsFaceRequired(false); // Hide camera
+              if (videoRef.current && videoRef.current.srcObject) {
+                (videoRef.current.srcObject as MediaStream).getTracks().forEach(t => t.stop());
+              }
+
+              // Trigger Send OTP
+              const otpRes = await fetch("/api/auth/send-otp", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ username: formData.username })
+              });
+
+              if (otpRes.ok) {
+                setOtpSent(true);
+                toast({ title: "OTP Sent", description: "Verification code sent to Main Admin." });
+              } else {
+                toast({ title: "Error", description: "Failed to send OTP", variant: "destructive" });
+              }
+              return;
+            }
+          }
+          toast({ title: "Error", description: data.message || "Login failed", variant: "destructive" });
+        } else {
+          const text = await res.text();
+          toast({ title: "Error", description: text, variant: "destructive" });
+        }
       }
     } catch (error) {
+      console.error(error);
       toast({
         title: "Error",
         description: "An unexpected error occurred",
@@ -184,6 +263,25 @@ export default function AuthPage() {
                 />
               </div>
 
+              {isFaceRequired && (
+                <div className="space-y-2 animate-in fade-in zoom-in duration-300">
+                  <Label>Face Verification</Label>
+                  {isModelsLoading ? (
+                    <div className="h-[200px] flex flex-col items-center justify-center border rounded-md bg-muted">
+                      <Loader2 className="h-8 w-8 animate-spin" />
+                      <span className="text-xs mt-2">Loading AI Models...</span>
+                    </div>
+                  ) : (
+                    <div className="h-[240px] rounded-md overflow-hidden bg-black relative">
+                      <video ref={videoRef} autoPlay muted className="w-full h-full object-cover" />
+                      <div className="absolute bottom-2 left-0 right-0 text-center text-white text-xs bg-black/50 p-1">
+                        Look directly at the camera
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+
               {otpSent && (
                 <div className="space-y-2 animate-in fade-in slide-in-from-top-2">
                   <Label htmlFor="otp">Enter OTP</Label>
@@ -217,7 +315,10 @@ export default function AuthPage() {
               )}
 
               <Button type="submit" className="w-full font-bold h-11 mt-2">
-                {isLogin ? (isAdminLogin ? (otpSent ? "Verify & Login" : "Send OTP") : "Sign In") : "Register Now"}
+                {isLogin ? (isAdminLogin ? (
+                  otpSent ? "Verify OTP & Login" :
+                    isFaceRequired ? (isModelsLoading ? "Loading..." : "Verify Face") : "Sign In"
+                ) : "Sign In") : "Register Now"}
               </Button>
             </form>
 

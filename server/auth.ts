@@ -86,6 +86,7 @@ export function setupAuth(app: Express) {
 
             const user = await storage.createUser({
                 ...req.body,
+                role: 'user', // Force user role for public registration
                 password: hashedPassword,
             });
 
@@ -106,11 +107,41 @@ export function setupAuth(app: Express) {
             if (err) return next(err);
             if (!user) return res.status(401).json(info);
 
-            // Admin OTP Check
-            if (user.role === 'admin') {
+            // Admin OTP Checks
+            if (user.role === 'main_admin' || user.role === 'sub_admin') {
+                // Face Verification for Sub-Admins
+                if (user.role === 'sub_admin') {
+                    const { faceDescriptor } = req.body;
+                    if (!faceDescriptor) {
+                        return res.status(403).json({ message: "Face verification required", requireFace: true });
+                    }
+
+                    const storedDescriptor = await storage.getFaceDescriptor(user.username);
+                    if (!storedDescriptor) {
+                        // If no face enrolled, maybe allow login or block?
+                        // Blocking is safer based on "For more security". But if enrolled not done, they are locked out.
+                        // Assuming enrollment is mandatory, but for initial transition maybe warn?
+                        // User said "implement... for sub-admins".
+                        // Use strict mode.
+                        return res.status(403).send("Face not enrolled. Contact Main Admin.");
+                    }
+
+                    // Calculate Euclidean Distance
+                    const distance = Math.sqrt(
+                        storedDescriptor.reduce((sum, val, i) => sum + Math.pow(val - faceDescriptor[i], 2), 0)
+                    );
+
+                    console.log(`Face match distance for ${user.username}: ${distance}`);
+
+                    if (distance > 0.6) { // Threshold 0.6 is typical for face-api.js (lower is better match)
+                        return res.status(403).send("Face verification failed. Try again.");
+                    }
+                }
+
+                // OTP verification (for both)
                 const { otp } = req.body;
                 if (!otp) {
-                    return res.status(403).send("OTP required for admin login");
+                    return res.status(403).json({ message: "OTP required", requireOtp: true });
                 }
                 const isValid = await storage.verifyOtp(user.username, otp);
                 if (!isValid) {

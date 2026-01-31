@@ -1,5 +1,6 @@
 import { type User, type InsertUser } from "@shared/schema"; // Keep this for user auth if needed, but we focus on Candidates
 import { CandidateModel, UserModel, FeedbackModel, IssueModel, ReportModel } from "./models";
+import { AdminModel } from "./models/Admin";
 
 // Use the same interface style if there was one, or adapt
 // Looking at original storage.ts, it had IStorage for User.
@@ -25,6 +26,7 @@ export interface IStorage {
   getUserByUsername(username: string): Promise<User | undefined>;
   getUserByEmail(email: string): Promise<User | undefined>;
   createUser(user: InsertUser): Promise<User>;
+  getSubAdmins(createdBy: string): Promise<User[]>;
 
   // Candidate methods
   getCandidates(): Promise<any[]>;
@@ -86,30 +88,61 @@ export class MongoStorage implements IStorage {
     return false;
   }
   async getUser(id: string): Promise<User | undefined> {
-    const user = await UserModel.findById(id);
+    let user = await UserModel.findById(id);
+    if (!user) user = await AdminModel.findById(id);
     if (!user) return undefined;
-    return { id: user._id.toString(), username: user.username, password: user.password, role: user.role, email: user.email ?? null };
+    return { id: user._id.toString(), username: user.username, password: user.password, role: user.role, email: user.email ?? null, createdBy: user.createdBy ?? null };
   }
 
   async getUserByUsername(username: string): Promise<User | undefined> {
-    const user = await UserModel.findOne({ username });
+    let user = await UserModel.findOne({ username });
+    if (!user) user = await AdminModel.findOne({ username });
     if (!user) return undefined;
-    return { id: user._id.toString(), username: user.username, password: user.password, role: user.role, email: user.email ?? null };
+    return { id: user._id.toString(), username: user.username, password: user.password, role: user.role, email: user.email ?? null, createdBy: user.createdBy ?? null };
   }
 
   async getUserByEmail(email: string): Promise<User | undefined> {
-    const user = await UserModel.findOne({ email });
+    let user = await UserModel.findOne({ email });
+    if (!user) user = await AdminModel.findOne({ email });
     if (!user) return undefined;
-    return { id: user._id.toString(), username: user.username, password: user.password, role: user.role, email: user.email ?? null };
+    return { id: user._id.toString(), username: user.username, password: user.password, role: user.role, email: user.email ?? null, createdBy: user.createdBy ?? null };
   }
 
   async createUser(insertUser: InsertUser): Promise<User> {
-    const user = new UserModel(insertUser);
+    let user;
+    if (insertUser.role === 'main_admin' || insertUser.role === 'sub_admin') {
+      user = new AdminModel(insertUser);
+    } else {
+      user = new UserModel(insertUser);
+    }
     await user.save();
-    return { id: user._id.toString(), username: user.username, password: user.password, role: user.role, email: user.email ?? null };
+    return { id: user._id.toString(), username: user.username, password: user.password, role: user.role, email: user.email ?? null, createdBy: user.createdBy ?? null };
+  }
+
+  async getSubAdmins(createdBy: string): Promise<User[]> {
+    const users = await AdminModel.find({ role: 'sub_admin', createdBy });
+    return users.map(user => ({
+      id: user._id.toString(),
+      username: user.username,
+      password: user.password,
+      role: user.role,
+      email: user.email ?? null,
+      createdBy: user.createdBy ?? null
+    }));
+  }
+
+  async setFaceDescriptor(username: string, descriptor: number[]) {
+    // Only for Admins
+    await AdminModel.findOneAndUpdate({ username }, { faceDescriptor: descriptor });
+  }
+
+  async getFaceDescriptor(username: string): Promise<number[] | null> {
+    const admin = await AdminModel.findOne({ username });
+    return admin && admin.faceDescriptor ? admin.faceDescriptor : null;
   }
 
   async getCandidates() {
+
     return await CandidateModel.find({});
   }
 

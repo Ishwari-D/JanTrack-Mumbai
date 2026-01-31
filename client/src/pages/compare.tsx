@@ -4,28 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useQuery } from "@tanstack/react-query";
 import { Loader2 } from "lucide-react";
-
-// Reuse Candidate Interface
-interface Candidate {
-  id: string;
-  name: string;
-  party: string;
-  constituency: string;
-  ward: string;
-  age: number;
-  education: string;
-  image: string;
-  criminalCases: number;
-  assets: string;
-  attendance: number;
-  promises: any[];
-  funds: {
-    allocated: number;
-    utilized: number;
-    projects: any[];
-  };
-  bio: string;
-}
+import { Candidate } from "@shared/schema";
 
 export default function ComparePage() {
   const [location] = useLocation();
