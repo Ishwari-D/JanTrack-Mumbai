@@ -241,6 +241,20 @@ export function Layout({ children }: { children: React.ReactNode }) {
           © 2026 JanTrack Mumbai. All rights reserved. • Built for Democracy.
         </div>
       </footer>
+
+      {/* Floating Meet Developers Button */}
+      <div className="fixed bottom-6 right-6 z-40 animate-in slide-in-from-bottom-10 fade-in duration-700">
+        <Link href="/about-us">
+          <a className="group">
+            <Button
+              className="rounded-full shadow-lg bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-white font-bold px-4 py-2 text-sm h-auto border-2 border-white dark:border-slate-800 transition-all hover:scale-105 hover:shadow-xl"
+            >
+              Meet Developers
+            </Button>
+          </a>
+        </Link>
+      </div>
+
       <JanSahayak />
     </div>
   );

@@ -63,7 +63,7 @@ export function JanSahayak() {
                         initial={{ opacity: 0, scale: 0.8, y: 20 }}
                         animate={{ opacity: 1, scale: 1, y: 0 }}
                         exit={{ opacity: 0, scale: 0.8, y: 20 }}
-                        className="fixed bottom-28 right-6 z-50 w-[380px] shadow-2xl origin-bottom-right"
+                        className="fixed bottom-44 right-6 z-50 w-[380px] shadow-2xl origin-bottom-right"
                     >
                         <Card className="border-0 shadow-2xl bg-background/95 backdrop-blur-md overflow-hidden flex flex-col h-[500px]">
                             {/* Header */}
@@ -171,7 +171,7 @@ export function JanSahayak() {
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.9 }}
                 onClick={() => setIsOpen(!isOpen)}
-                className="fixed bottom-6 right-6 z-50 h-16 w-16 rounded-full bg-primary text-primary-foreground shadow-lg shadow-primary/30 flex items-center justify-center border-4 border-white dark:border-slate-800 hover:shadow-2xl transition-all overflow-hidden group"
+                className="fixed bottom-24 right-6 z-50 h-16 w-16 rounded-full bg-primary text-primary-foreground shadow-lg shadow-primary/30 flex items-center justify-center border-4 border-white dark:border-slate-800 hover:shadow-2xl transition-all overflow-hidden group"
             >
                 {isOpen ? (
                     <X size={28} />

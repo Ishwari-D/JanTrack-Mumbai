@@ -6,33 +6,33 @@ import { Button } from "@/components/ui/button";
 
 const teamMembers = [
     {
-        name: "Omkar",
+        name: "Omkar Dhakne",
         role: "Technical Lead & Team Head",
-        initials: "OM",
+        initials: "OD",
         email: "omkardhakane101@gmail.com",
         linkedin: "https://www.linkedin.com/in/omkardhakane?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app",
         description: "Omkar serves as the Technical Lead and Team Head of JanTrack. He is responsible for overall system architecture, technical decision-making, and team coordination, ensuring smooth integration of all project components."
     },
     {
-        name: "Ishwari",
+        name: "Ishwari Darekar",
         role: "Statistics & Data Analysis",
-        initials: "IS",
+        initials: "ID",
         email: "mycourselearning11@gmail.com",
         linkedin: "https://www.linkedin.com/in/ishwari-darekar-95865a369?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app",
         description: "Ishwari is responsible for statistical analysis and data interpretation. She ensures that the data used in JanTrack is accurate, meaningful, and presented with proper analytical logic."
     },
     {
-        name: "Jaskeerat",
+        name: "Jaskeerat Singh",
         role: "Database & Backend Development",
-        initials: "JA",
+        initials: "JS",
         email: "jaskeeratsingh1510@gmail.com",
         linkedin: "https://www.linkedin.com/in/jaskeerat-singh-895376379?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app",
         description: "Jaskeerat is responsible for database management and backend development. He ensures efficient data storage, secure handling, and smooth backend operations across the platform."
     },
     {
-        name: "Ashish",
+        name: "Ashish Gholap",
         role: "Frontend & Creativity",
-        initials: "AS",
+        initials: "AG",
         email: "ashishgholap061@gmail.com",
         linkedin: "https://www.linkedin.com/in/ashish-gholap-7a1765333?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app",
         description: "Ashish handles the user interface, user experience, and overall creative design of JanTrack. His role is to make the platform visually appealing, intuitive, and easy to understand for users."
@@ -71,9 +71,9 @@ export default function AboutUs() {
                                 <Card key={member.name} className="hover:shadow-xl transition-all duration-300 border-primary/10 flex flex-col h-full hover:scale-[1.02] bg-card/50 hover:bg-card group">
                                     <CardHeader className="flex flex-col items-center pb-2">
                                         <Avatar className="h-28 w-28 mb-4 ring-4 ring-offset-4 ring-primary/10 group-hover:ring-primary/30 transition-all">
-                                            {/* Priority 1: Local Image */}
+                                            {/* Priority 1: Local Image (using first name) */}
                                             <AvatarImage
-                                                src={`/images/${member.name.toLowerCase()}.jpg`}
+                                                src={`/images/${member.name.split(' ')[0].toLowerCase()}.jpg`}
                                                 alt={member.name}
                                                 className="object-cover"
                                             />
@@ -116,15 +116,12 @@ export default function AboutUs() {
                     {/* Support Section */}
                     <section className="bg-primary/5 p-8 rounded-lg border border-primary/10">
                         <h2 className="text-2xl font-bold mb-6 text-center font-serif">Support & Feedback</h2>
-                        <div className="flex flex-col md:flex-row items-center gap-6 max-w-2xl mx-auto text-center md:text-left">
-
-                            <div>
-                                <h3 className="text-xl font-bold">Rohan</h3>
-                                <p className="text-primary font-medium mb-2">Project Support & Feedback</p>
-                                <p className="text-muted-foreground leading-relaxed text-sm">
-                                    Although not an official team member, Rohan plays an important role by providing valuable feedback and guidance. He helps the team improve data presentation and maintain a professional standard across the project.
-                                </p>
-                            </div>
+                        <div className="max-w-3xl mx-auto text-center">
+                            <h3 className="text-xl font-bold">Rohan Hiras</h3>
+                            <p className="text-primary font-medium mb-3">Project Support & Feedback</p>
+                            <p className="text-muted-foreground leading-relaxed text-sm max-w-2xl mx-auto">
+                                Although not an official team member, Rohan plays an important role by providing valuable feedback and guidance. He helps the team improve data presentation and maintain a professional standard across the project.
+                            </p>
                         </div>
                     </section>
 
