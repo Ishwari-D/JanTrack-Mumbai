@@ -15,6 +15,7 @@ import CandidatesPage from "@/pages/candidates";
 import ComparePage from "@/pages/compare";
 import AdminPage from "@/pages/admin";
 import WardMap from "@/pages/ward-map";
+import AboutUs from "@/pages/about-us";
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect } from "react";
 
@@ -37,6 +38,7 @@ function Router() {
       <div className="min-h-screen">
         <Switch location={location}>
           <Route path="/" component={Home} />
+          <Route path="/about-us" component={AboutUs} />
           <Route path="/candidates" component={CandidatesPage} />
           <Route path="/compare" component={ComparePage} />
           <Route path="/candidate/:id" component={CandidateProfile} />

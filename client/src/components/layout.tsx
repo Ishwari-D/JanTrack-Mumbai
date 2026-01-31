@@ -210,6 +210,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
           <div>
             <h4 className="font-serif font-bold text-lg mb-6 text-white dark:text-slate-900">Legal & Help</h4>
             <ul className="space-y-4 text-sm text-primary-foreground/70 dark:text-slate-600">
+              <li><Link href="/about-us"><a className="hover:text-white dark:hover:text-primary transition-colors">About Us</a></Link></li>
               <li><a href="#" className="hover:text-white dark:hover:text-primary transition-colors">Voter Guide</a></li>
               <li><a href="#" className="hover:text-white dark:hover:text-primary transition-colors">Privacy Policy</a></li>
               <li><a href="#" className="hover:text-white dark:hover:text-primary transition-colors">Terms of Service</a></li>
