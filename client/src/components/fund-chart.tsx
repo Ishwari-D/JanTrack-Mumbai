@@ -1,5 +1,5 @@
 import { Bar, BarChart, CartesianGrid, Cell, Legend, Pie, PieChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
-import { Candidate } from "@/lib/mock-data";
+import { Candidate } from "@shared/schema";
 
 export function FundUtilizationChart({ funds }: { funds: Candidate['funds'] }) {
   const utilizationData = [
@@ -38,7 +38,7 @@ export function FundUtilizationChart({ funds }: { funds: Candidate['funds'] }) {
                 ))}
               </Pie>
               <Tooltip
-                formatter={(value: number) => formatCurrency(value)}
+                formatter={(value: number) => [formatCurrency(value), "Utilized"]}
                 contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}
               />
               <Legend verticalAlign="bottom" height={36} />
@@ -66,7 +66,7 @@ export function FundUtilizationChart({ funds }: { funds: Candidate['funds'] }) {
                 interval={0}
               />
               <Tooltip
-                formatter={(value: number) => `₹${(value / 100000).toFixed(1)}L`}
+                formatter={(value: number) => [`₹${(value / 100000).toFixed(1)}L`, "Cost"]}
                 cursor={{ fill: 'hsl(var(--muted)/0.2)' }}
                 contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}
               />

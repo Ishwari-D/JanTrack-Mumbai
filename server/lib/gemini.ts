@@ -1,18 +1,26 @@
 import { storage } from "../storage";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
-// Using the experimental model as verified by user, can fallback to gemini-1.5-flash if needed
-if (!process.env.GEMINI_API_KEY) {
-    throw new Error("GEMINI_API_KEY environment variable is missing");
+// Initialize lazily or conditionally
+let genAI: GoogleGenerativeAI | null = null;
+let model: any = null;
+
+if (process.env.GEMINI_API_KEY) {
+    genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+    model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
+} else {
+    console.warn("GEMINI_API_KEY environment variable is missing. AI features will be disabled.");
 }
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
 
 // Simple in-memory cache to save quota
 const responseCache = new Map<string, { reply: string, timestamp: number }>();
 const CACHE_TTL = 1000 * 60 * 60; // 1 hour cache
 
 export async function getChatResponse(message: string) {
+    if (!model) {
+        return "I am currently offline because the AI service is not configured (Missing GEMINI_API_KEY).";
+    }
+
     try {
         // Check cache first
         const cacheKey = message.toLowerCase().trim();
@@ -52,7 +60,7 @@ OFFICIAL WARD DATA:
 - Ward A: Colaba
 - Ward K/W: Andheri West
 - Ward K/E: Andheri East
-... (and so on)
+- ... (and so on)
 
 If asked about a candidate, use the specific details from the list above.
 If the candidate is not in the list, say "I don't have information on that candidate yet."
@@ -87,7 +95,7 @@ IMPORTANT: Keep your answer concise (under 100 words) to save time.
         // Handle Rate Limiting specifically
 
         if (error.message?.includes("429") || error.status === 429) {
-            return "I am currently receiving too many questions. Please wait a minute and try again. (Daily Limit Reach d)";
+            return "I am currently receiving too many questions. Please wait a minute and try again. (Daily Limit Reached)";
         }
 
 
