@@ -76,9 +76,9 @@ export function JanSahayak() {
                         initial={{ opacity: 0, scale: 0.8, y: 20 }}
                         animate={{ opacity: 1, scale: 1, y: 0 }}
                         exit={{ opacity: 0, scale: 0.8, y: 20 }}
-                        className="fixed bottom-24 right-6 z-50 w-[380px] shadow-2xl origin-bottom-right"
+                        className="fixed bottom-24 right-4 md:right-6 z-50 w-[calc(100vw-32px)] md:w-[380px] shadow-2xl origin-bottom-right"
                     >
-                        <Card className="border-0 shadow-2xl bg-background/95 backdrop-blur-md overflow-hidden flex flex-col h-[500px]">
+                        <Card className="border-0 shadow-2xl bg-background/95 backdrop-blur-md overflow-hidden flex flex-col h-[500px] md:h-[600px] max-h-[70vh]">
                             {/* Header */}
                             <div className="bg-gradient-to-r from-primary to-primary/80 text-primary-foreground p-4 flex items-center justify-between shrink-0">
                                 <div className="flex items-center gap-3">
@@ -187,7 +187,7 @@ export function JanSahayak() {
                         animate={{ opacity: 1, scale: 1, y: 0 }}
                         exit={{ opacity: 0, scale: 0.8 }}
                         transition={{ delay: 1, type: "spring" }}
-                        className="fixed bottom-24 right-6 z-50 origin-bottom-right"
+                        className="fixed bottom-24 right-4 md:right-6 z-50 origin-bottom-right"
                     >
                         <div
                             className="bg-white dark:bg-slate-800 text-foreground px-4 py-3 rounded-2xl rounded-br-none shadow-xl border border-primary/20 cursor-pointer hover:scale-105 transition-transform relative"
@@ -210,7 +210,7 @@ export function JanSahayak() {
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.9 }}
                 onClick={() => setIsOpen(!isOpen)}
-                className="fixed bottom-6 right-6 z-50 h-16 w-16 rounded-full bg-primary text-primary-foreground shadow-lg shadow-primary/30 flex items-center justify-center border-4 border-white dark:border-slate-800 hover:shadow-2xl transition-all overflow-hidden group"
+                className="fixed bottom-6 right-4 md:right-6 z-50 h-16 w-16 rounded-full bg-primary text-primary-foreground shadow-lg shadow-primary/30 flex items-center justify-center border-4 border-white dark:border-slate-800 hover:shadow-2xl transition-all overflow-hidden group"
             >
                 {isOpen ? (
                     <X size={28} />

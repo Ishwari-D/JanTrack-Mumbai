@@ -243,7 +243,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
       </footer>
 
       {/* Floating Meet Developers Button */}
-      <div className="fixed bottom-6 left-6 z-40 animate-in slide-in-from-bottom-10 fade-in duration-700">
+      <div className="fixed bottom-6 left-4 md:left-6 z-40 animate-in slide-in-from-bottom-10 fade-in duration-700">
         <Link href="/about-us">
           <a className="group">
             <Button
