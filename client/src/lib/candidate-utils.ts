@@ -1,8 +1,9 @@
 
 export function getCandidateImage(candidate: { image?: string; gender?: string }): string {
-    if (candidate.image && candidate.image.trim() !== "") {
-        return candidate.image;
-    }
+    // Force default images by ignoring the specific candidate image for now
+    // if (candidate.image && candidate.image.trim() !== "") {
+    //     return candidate.image;
+    // }
 
     const gender = candidate.gender?.toLowerCase() || "";
 
