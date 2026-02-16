@@ -34,7 +34,7 @@ In local and general elections, voters often lack access to clear, verified, and
 
 **Live Dashboard Statistics:**
 - **1,578+ Candidates Tracked** - Complete profiles with verified information
-- **₹58,000+ Crores Monitored** - Public funds and project allocations
+- **₹22,000+ Crores Monitored** - Public funds and project allocations
 - **1,600+ Promises Logged** - Manifesto commitments tracked in real-time
 - **227+ Wards Covered** - Comprehensive Mumbai constituency coverage
 
