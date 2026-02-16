@@ -20,10 +20,10 @@ const projectSchema = new mongoose.Schema({
 
 const candidateSchema = new mongoose.Schema({
     id: { type: String, required: true, unique: true },
-    name: String,
-    party: String,
-    constituency: String,
-    ward: String,
+    name: { type: String, index: true },
+    party: { type: String, index: true },
+    constituency: { type: String, index: true },
+    ward: { type: String, index: true },
     gender: String,
     age: Number,
     education: String,
@@ -39,5 +39,8 @@ const candidateSchema = new mongoose.Schema({
     },
     bio: String
 });
+
+// Compound index for frequent queries like getting candidates by ward + party
+candidateSchema.index({ ward: 1, party: 1 });
 
 export const CandidateModel = mongoose.model('Candidate', candidateSchema);

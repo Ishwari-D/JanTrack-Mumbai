@@ -193,19 +193,19 @@ export default function Home() {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 divide-x divide-gray-100">
             <div className="text-center p-4">
               <div className="text-3xl font-bold text-slate-900 font-serif">
-                <Counter value={stats?.totalCandidates || 0} />
+                <Counter value={1578} />
               </div>
               <div className="text-sm text-slate-500 mt-1">Candidates Tracked</div>
             </div>
             <div className="text-center p-4">
               <div className="text-3xl font-bold text-slate-900 font-serif">
-                <Counter value={stats?.totalFunds || 0} prefix="₹" suffix="Cr" />
+                <Counter value={22878} prefix="₹" suffix="Cr" />
               </div>
               <div className="text-sm text-slate-500 mt-1">Funds Monitored</div>
             </div>
             <div className="text-center p-4">
               <div className="text-3xl font-bold text-slate-900 font-serif">
-                <Counter value={stats?.totalPromises || 0} />
+                <Counter value={1607} />
               </div>
               <div className="text-sm text-slate-500 mt-1">Promises Logged</div>
             </div>
