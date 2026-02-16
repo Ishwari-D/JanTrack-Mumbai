@@ -27,6 +27,7 @@ export async function getChatResponse(message: string) {
 
         // Fetch real-time data from database
         const candidates = await storage.getCandidates();
+        console.log(`Generating AI context for ${candidates.length} candidates`);
 
         // Create a summary of candidates for the AI
         const candidateContext = candidates.map(c => {
@@ -47,15 +48,19 @@ export async function getChatResponse(message: string) {
 
         const DYNAMIC_CONTEXT = `
 You are "JanSahayak", a helpful AI civic assistant for Mumbai.
-You have access to the REAL-TIME database of candidates:
+You have access to the REAL-TIME database of candidates.
 
+SYSTEM STATS:
+Total Candidates: ${candidates.length}
+
+CANDIDATE LIST:
 ${candidateContext}
 
 OFFICIAL WARD DATA:
 - Ward A: Colaba
 - Ward K/W: Andheri West
 - Ward K/E: Andheri East
-... (and so on)
+- ... (and so on)
 
 If asked about a candidate, use the specific details from the list above.
 If the candidate is not in the list, say "I don't have information on that candidate yet."
@@ -98,6 +103,6 @@ IMPORTANT: Keep your answer concise (under 100 words) to save time.
             return "I am currently receiving too many questions. Please wait a minute and try again. (Server is busy)";
         }
 
-        return `I'm having trouble processing that right now. Please try again later. (Error: ${error.message})`;
+        return `DEBUG: Error: ${error.message} | Stack: ${error.stack}`;
     }
 }

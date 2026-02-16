@@ -109,6 +109,10 @@ export default function Home() {
     }
   };
 
+  const { data: stats } = useQuery<any>({
+    queryKey: ["/api/stats"],
+  });
+
   return (
     <Layout>
       {/* Hero Section */}
@@ -189,27 +193,27 @@ export default function Home() {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 divide-x divide-gray-100">
             <div className="text-center p-4">
               <div className="text-3xl font-bold text-slate-900 font-serif">
-                <Counter value={1240} />
+                <Counter value={stats?.totalCandidates || 0} />
               </div>
               <div className="text-sm text-slate-500 mt-1">Candidates Tracked</div>
             </div>
             <div className="text-center p-4">
               <div className="text-3xl font-bold text-slate-900 font-serif">
-                <Counter value={58432} prefix="₹" suffix="Cr" />
+                <Counter value={stats?.totalFunds || 0} prefix="₹" suffix="Cr" />
               </div>
               <div className="text-sm text-slate-500 mt-1">Funds Monitored</div>
             </div>
             <div className="text-center p-4">
               <div className="text-3xl font-bold text-slate-900 font-serif">
-                <Counter value={5600} />
+                <Counter value={stats?.totalPromises || 0} />
               </div>
               <div className="text-sm text-slate-500 mt-1">Promises Logged</div>
             </div>
             <div className="text-center p-4">
               <div className="text-3xl font-bold text-slate-900 font-serif">
-                <Counter value={25000} suffix="+" />
+                <Counter value={200} suffix="+" />
               </div>
-              <div className="text-sm text-slate-500 mt-1">Verified Reports</div>
+              <div className="text-sm text-slate-500 mt-1">Wards Covered</div>
             </div>
           </div>
         </div>

@@ -183,6 +183,42 @@ export async function registerRoutes(
   });
 
 
+  // Stats Route
+  app.get("/api/stats", async (req, res) => {
+    try {
+      const candidates = await storage.getCandidates();
+      const reports = await storage.getReports();
+
+      const totalCandidates = candidates.length;
+      let totalFundsAllocated = 0;
+      let totalPromises = 0;
+
+      candidates.forEach((c: any) => {
+        if (c.funds && c.funds.allocated) {
+          totalFundsAllocated += Number(c.funds.allocated) || 0;
+        }
+        if (c.promises) {
+          totalPromises += c.promises.length;
+        }
+      });
+
+      // Convert to Crores
+      const totalFundsCr = Math.round(totalFundsAllocated / 10000000);
+
+      const verifiedReports = reports.filter((r: any) => r.status === 'resolved' || r.status === 'verified').length;
+
+      res.json({
+        totalCandidates,
+        totalFunds: totalFundsCr,
+        totalPromises,
+        verifiedReports
+      });
+    } catch (error) {
+      console.error("Error fetching stats:", error);
+      res.status(500).json({ message: "Failed to fetch stats" });
+    }
+  });
+
   // Candidate routes
   app.get("/api/candidates", async (req, res) => {
     try {
