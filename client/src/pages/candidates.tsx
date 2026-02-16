@@ -81,6 +81,29 @@ export default function CandidatesPage() {
   );
 
 
+  /* Smart Pagination Logic */
+  const getPageNumbers = () => {
+    const pages = [];
+    if (totalPages <= 7) {
+      for (let i = 1; i <= totalPages; i++) pages.push(i);
+    } else {
+      pages.push(1);
+      if (currentPage > 3) pages.push("...");
+
+      let start = Math.max(2, currentPage - 1);
+      let end = Math.min(totalPages - 1, currentPage + 1);
+
+      if (currentPage <= 3) { start = 2; end = 4; }
+      if (currentPage >= totalPages - 2) { start = totalPages - 3; end = totalPages - 1; }
+
+      for (let i = start; i <= end; i++) pages.push(i);
+
+      if (currentPage < totalPages - 2) pages.push("...");
+      pages.push(totalPages);
+    }
+    return pages;
+  };
+
   return (
     <Layout>
       <div className="bg-primary/5 border-b">
@@ -159,17 +182,21 @@ export default function CandidatesPage() {
               Previous
             </Button>
 
-            <div className="flex gap-1 mx-2 flex-wrap justify-center">
-              {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-                <Button
-                  key={page}
-                  variant={currentPage === page ? "default" : "outline"}
-                  size="sm"
-                  className="w-8 h-8 p-0"
-                  onClick={() => setCurrentPage(page)}
-                >
-                  {page}
-                </Button>
+            <div className="flex gap-1 mx-2 flex-wrap justify-center items-center">
+              {getPageNumbers().map((page, i) => (
+                typeof page === 'number' ? (
+                  <Button
+                    key={page}
+                    variant={currentPage === page ? "default" : "outline"}
+                    size="sm"
+                    className="w-8 h-8 p-0"
+                    onClick={() => setCurrentPage(page)}
+                  >
+                    {page}
+                  </Button>
+                ) : (
+                  <span key={`ellipsis-${i}`} className="px-2 text-muted-foreground">...</span>
+                )
               ))}
             </div>
 

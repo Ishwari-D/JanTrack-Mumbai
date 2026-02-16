@@ -224,7 +224,7 @@ export default function Dashboard() {
                       <div className="w-3 h-3 rounded-full" style={{ backgroundColor: party.color }}></div>
                       <CardTitle className="text-base font-bold">{party.name}</CardTitle>
                     </div>
-                    <div className="text-[10px] font-bold text-muted-foreground uppercase">
+                    <div className="text-xs font-bold text-muted-foreground uppercase">
                       {party.count} candidates
                     </div>
                   </div>
@@ -233,7 +233,7 @@ export default function Dashboard() {
                   <div className="grid grid-cols-2 gap-4">
                     {/* Ward Categories Chart */}
                     <div className="space-y-2">
-                      <p className="text-[10px] font-bold text-center uppercase text-muted-foreground">Ward Categories</p>
+                      <p className="text-xs font-bold text-center uppercase text-muted-foreground">Ward Categories</p>
                       <div className="h-[100px] w-full relative">
                         <ResponsiveContainer width="100%" height="100%">
                           <PieChart>
@@ -251,20 +251,20 @@ export default function Dashboard() {
                               ))}
                             </Pie>
                             <Tooltip
-                              contentStyle={{ fontSize: '10px', padding: '4px', borderRadius: '4px' }}
+                              contentStyle={{ fontSize: '12px', padding: '4px', borderRadius: '4px' }}
                               formatter={(v: number) => v}
                             />
                           </PieChart>
                         </ResponsiveContainer>
                         <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                          <span className="text-[8px] font-bold text-muted-foreground">WC</span>
+                          <span className="text-[10px] font-bold text-muted-foreground">WC</span>
                         </div>
                       </div>
                       <div className="flex flex-wrap justify-center gap-x-2 gap-y-1">
                         {party.wardCategories.map((wc: any) => (
                           <div key={wc.name} className="flex items-center gap-1">
                             <div className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: wc.color }}></div>
-                            <span className="text-[7px] text-muted-foreground font-bold">{wc.name} {wc.value}</span>
+                            <span className="text-[10px] text-muted-foreground font-bold">{wc.name} {wc.value}</span>
                           </div>
                         ))}
                       </div>
@@ -272,7 +272,7 @@ export default function Dashboard() {
 
                     {/* Seat Type Chart */}
                     <div className="space-y-2 text-center">
-                      <p className="text-[10px] font-bold uppercase text-muted-foreground">Seat Type</p>
+                      <p className="text-xs font-bold uppercase text-muted-foreground">Seat Type</p>
                       <div className="h-[100px] w-full relative">
                         <ResponsiveContainer width="100%" height="100%">
                           <PieChart>
@@ -290,20 +290,20 @@ export default function Dashboard() {
                               ))}
                             </Pie>
                             <Tooltip
-                              contentStyle={{ fontSize: '10px', padding: '4px', borderRadius: '4px' }}
+                              contentStyle={{ fontSize: '12px', padding: '4px', borderRadius: '4px' }}
                               formatter={(v: number) => v}
                             />
                           </PieChart>
                         </ResponsiveContainer>
                         <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                          <span className="text-[8px] font-bold text-muted-foreground">ST</span>
+                          <span className="text-[10px] font-bold text-muted-foreground">ST</span>
                         </div>
                       </div>
                       <div className="flex flex-wrap justify-center gap-x-2 gap-y-1">
                         {party.seatTypes.map((st: any) => (
                           <div key={st.name} className="flex items-center gap-1">
                             <div className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: st.color }}></div>
-                            <span className="text-[7px] text-muted-foreground font-bold">{st.name.startsWith("Women") ? "Women" : st.name} {st.value}</span>
+                            <span className="text-[10px] text-muted-foreground font-bold">{st.name.startsWith("Women") ? "Women" : st.name} {st.value}</span>
                           </div>
                         ))}
                       </div>
