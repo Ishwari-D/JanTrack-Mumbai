@@ -32,7 +32,9 @@ import { getCandidateImage } from "@/lib/candidate-utils";
 import { Candidate } from "@shared/schema";
 import { IssueModerationList } from "./components/issue-moderation-list";
 import { ReportsList } from "./components/reports-list";
+
 import { SubAdminsTab } from "./components/sub-admins-tab";
+import { ActivityLogList } from "./components/activity-log";
 
 // Types
 
@@ -288,6 +290,8 @@ export default function AdminPage() {
                                 <TabsTrigger value="overview">Candidates</TabsTrigger>
                                 <TabsTrigger value="issues">Issues</TabsTrigger>
                                 <TabsTrigger value="reports">Reports</TabsTrigger>
+                                <TabsTrigger value="activity">Activity Logs</TabsTrigger>
+
                                 {(user as any)?.role === 'main_admin' && <TabsTrigger value="subadmins">Sub Admins</TabsTrigger>}
                             </TabsList>
 
@@ -721,6 +725,20 @@ export default function AdminPage() {
 
                     <TabsContent value="subadmins">
                         <SubAdminsTab />
+
+
+                    </TabsContent>
+
+                    <TabsContent value="activity">
+                        <div className="bg-card rounded-lg border shadow-sm">
+                            <div className="p-6 border-b">
+                                <h2 className="text-xl font-bold font-serif">Activity Logs</h2>
+                                <p className="text-muted-foreground">Track admin actions and audit history</p>
+                            </div>
+                            <div className="p-6">
+                                <ActivityLogList />
+                            </div>
+                        </div>
                     </TabsContent>
                 </Tabs>
             </div>

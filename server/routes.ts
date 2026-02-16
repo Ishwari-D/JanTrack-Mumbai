@@ -108,6 +108,15 @@ export async function registerRoutes(
         createdBy: (req.user as any).id
       });
 
+      await storage.createActivityLog({
+        adminId: (req.user as any).id,
+        adminName: (req.user as any).username,
+        action: 'CREATE_SUB_ADMIN',
+        entityType: 'USER',
+        entityId: newAdmin.id,
+        details: { username: newAdmin.username, role: newAdmin.role }
+      });
+
       res.status(201).json(newAdmin);
     } catch (error) {
       console.error("Error creating sub-admin:", error);
@@ -153,6 +162,26 @@ export async function registerRoutes(
     }
   });
 
+  // Activity Logs
+  app.get("/api/admin/activity-logs", async (req, res) => {
+    if (!req.isAuthenticated()) return res.sendStatus(401);
+    const userRole = (req.user as any).role;
+
+    // Assuming both main_admin and sub_admin can view logs as per requirement
+    // "visible to all other subadmins"
+    if (userRole !== 'main_admin' && userRole !== 'sub_admin') {
+      return res.status(403).send("Access denied");
+    }
+
+    try {
+      const logs = await storage.getActivityLogs();
+      res.json(logs);
+    } catch (error) {
+      console.error("Error fetching activity logs:", error);
+      res.status(500).send("Failed to fetch activity logs");
+    }
+  });
+
 
   // Candidate routes
   app.get("/api/candidates", async (req, res) => {
@@ -183,7 +212,20 @@ export async function registerRoutes(
         return res.status(400).json({ message: "Missing body" });
       }
       console.log("POST /api/candidates payload:", JSON.stringify(req.body, null, 2));
+
       const candidate = await storage.createCandidate(req.body);
+
+      if (req.isAuthenticated() && ((req.user as any).role === 'main_admin' || (req.user as any).role === 'sub_admin')) {
+        await storage.createActivityLog({
+          adminId: (req.user as any).id,
+          adminName: (req.user as any).username,
+          action: 'CREATE_CANDIDATE',
+          entityType: 'CANDIDATE',
+          entityId: candidate.id, // Assuming candidate has an 'id' or '_id' field that fits schema
+          details: { name: candidate.name, party: candidate.party }
+        });
+      }
+
       res.status(201).json(candidate);
     } catch (error: any) {
       console.error("Error in POST /api/candidates:", error);
@@ -197,6 +239,18 @@ export async function registerRoutes(
       if (!candidate) {
         return res.status(404).json({ message: "Candidate not found" });
       }
+
+      if (req.isAuthenticated() && ((req.user as any).role === 'main_admin' || (req.user as any).role === 'sub_admin')) {
+        await storage.createActivityLog({
+          adminId: (req.user as any).id,
+          adminName: (req.user as any).username,
+          action: 'UPDATE_CANDIDATE',
+          entityType: 'CANDIDATE',
+          entityId: candidate.id,
+          details: { name: candidate.name, status: 'updated' }
+        });
+      }
+
       res.json(candidate);
     } catch (error) {
       res.status(500).json({ message: "Failed to update candidate" });
@@ -205,6 +259,17 @@ export async function registerRoutes(
 
   app.delete("/api/candidates/:id", async (req, res) => {
     try {
+      if (req.isAuthenticated() && ((req.user as any).role === 'main_admin' || (req.user as any).role === 'sub_admin')) {
+        // We might want to fetch candidate name before deleting for better logs, but simple ID is ok for now
+        await storage.createActivityLog({
+          adminId: (req.user as any).id,
+          adminName: (req.user as any).username,
+          action: 'DELETE_CANDIDATE',
+          entityType: 'CANDIDATE',
+          entityId: req.params.id,
+          details: {}
+        });
+      }
       await storage.deleteCandidate(req.params.id);
       res.status(204).send();
     } catch (error) {
@@ -287,6 +352,18 @@ export async function registerRoutes(
     try {
       const issue = await storage.verifyIssue(req.params.id);
       if (!issue) return res.status(404).json({ message: "Issue not found" });
+
+      if (req.isAuthenticated() && ((req.user as any).role === 'main_admin' || (req.user as any).role === 'sub_admin')) {
+        await storage.createActivityLog({
+          adminId: (req.user as any).id,
+          adminName: (req.user as any).username,
+          action: 'VERIFY_ISSUE',
+          entityType: 'ISSUE',
+          entityId: issue._id.toString(),
+          details: { title: issue.title, status: 'verified' }
+        });
+      }
+
       res.json(issue);
     } catch (error) {
       res.status(500).json({ message: "Failed to verify issue" });
@@ -370,6 +447,16 @@ export async function registerRoutes(
       const { status } = req.body;
       const report = await storage.updateReportStatus(req.params.id, status);
       if (!report) return res.status(404).json({ message: "Report not found" });
+
+      await storage.createActivityLog({
+        adminId: (req.user as any).id,
+        adminName: (req.user as any).username,
+        action: 'UPDATE_REPORT_STATUS',
+        entityType: 'REPORT',
+        entityId: report._id.toString(),
+        details: { status: status, candidateName: report.candidateName }
+      });
+
       res.json(report);
     } catch (error) {
       res.status(500).json({ message: "Failed to update report" });

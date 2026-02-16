@@ -1,5 +1,5 @@
 import { type User, type InsertUser } from "@shared/schema"; // Keep this for user auth if needed, but we focus on Candidates
-import { CandidateModel, UserModel, FeedbackModel, IssueModel, ReportModel } from "./models";
+import { CandidateModel, UserModel, FeedbackModel, IssueModel, ReportModel, ActivityLogModel } from "./models";
 import { AdminModel } from "./models/Admin";
 
 // Use the same interface style if there was one, or adapt
@@ -53,6 +53,10 @@ export interface IStorage {
   // OTP methods
   saveOtp(username: string, otp: string): Promise<void>;
   verifyOtp(username: string, otp: string): Promise<boolean>;
+
+  // Activity Log methods
+  createActivityLog(log: any): Promise<any>;
+  getActivityLogs(): Promise<any[]>;
 }
 
 export class MongoStorage implements IStorage {
@@ -202,6 +206,16 @@ export class MongoStorage implements IStorage {
     return await ReportModel.findByIdAndUpdate(id, { status }, { new: true });
   }
 
+
+
+  async createActivityLog(log: any) {
+    const newLog = new ActivityLogModel(log);
+    return await newLog.save();
+  }
+
+  async getActivityLogs() {
+    return await ActivityLogModel.find({}).sort({ timestamp: -1 });
+  }
 }
 
 export const storage = new MongoStorage();
